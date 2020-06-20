@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="basiciopage-template.css">
+  <title>WebUSBTMC Test page</title>
+</head>
+
+<body>
+  <div class="container">
+    <h4>WebUSBTMC Basic I/O</h4>
+    <button type="button" class="btn btn-primary" id="connect-button">Connect</button>
+    <h6><output id="device-name">-</output></h6>
+    <h6><output id="notification-message">Condition:</output></h6>
+  </div>
+
+  <div class="pt-1"></div>
+
+  <div class="container">
+    <h4>Input</h4>
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Select or Enter Command" id="input-text">
+      <div class="input-group-append">
+        <div class="btn-group commands">
+          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Select</button>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" value="*IDN?">*IDN?</button>
+            <button class="dropdown-item" value="*CLS">*CLS</button>
+            <button class="dropdown-item" value="*RST">*RST</button>
+            <button class="dropdown-item" value="*TST?">*TST?</button>
+            <button class="dropdown-item" value="*OPC">*OPC</button>
+            <button class="dropdown-item" value="*OPC?">*OPC?</button>
+            <button class="dropdown-item" value="*WAI">*WAI</button>
+            <button class="dropdown-item" value="*ESE">*ESE</button>
+            <button class="dropdown-item" value="*ESR">*ESE?</button>
+            <button class="dropdown-item" value="*ESR?">*ESR?</button>
+            <button class="dropdown-item" value="*SRE">*SRE</button>
+            <button class="dropdown-item" value="*SRE?">*SRE?</button>
+            <button class="dropdown-item" value="*STB?">*STB?</button>
+            <button class="dropdown-item" value=":DISP:DATA?">:DISPlay:DATA?</button>
+            <button class="dropdown-item" value=":HCOP:DATA?">:HCOPy:DATA?</button>
+            <button class="dropdown-item" value="HARDC START">HARDCopy START</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary" id="wr-button">Write</button>
+      <div class="btn-group button-names">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="wr-which">Data</button>
+        <div class="dropdown-menu dropdown-menu-right" style="min-width: 400px;">
+          <button class="dropdown-item" value="Data">Data</button>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" value="Binary Data">Binary Data</button>
+          <form class="px-4">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="wr-inputGroupFileAddon">Upload</span>
+              </div>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="wr-filebutton"
+                  aria-describedby="wr-inputGroupFileAddon">
+                <label class="custom-file-label" for="wr-filebutton" id="wr-filename">Choose file</label>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-1"></div>
+
+  <div class="container">
+    <div class="btn-group">
+      <button type="button" class="btn btn-primary" id="rd-button">Read</button>
+      <div class="btn-group button-names">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
+          id="rd-which">Data</button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" value="Data">Data</button>
+          <form class="px-4">
+            <div class="form-group">
+              <label for="rd-length">Bytes to read</label>
+              <input type="text" class="form-control" id="rd-length" placeholder="1024">
+            </div>
+          </form>
+          <div class="dropdown-divider"></div>
+          <button class="dropdown-item" value="Binary Data">Binary Data</button>
+        </div>
+      </div>
+      <div class="btn-group button-names">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="rd-as-how">as Text</button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" value="as Text">as Text</button>
+          <button class="dropdown-item" value="as Image">as Image</button>
+          <button class="dropdown-item" value="as Object">as Object</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pt-1"></div>
+
+  <div class="container">
+    <button type="button" class="btn btn-secondary btn-sm" id="rstatus-button">Read Status Byte</button>
+    <button type="button" class="btn btn-secondary btn-sm" id="clear-button">Clear</button>
+  </div>
+
+  <div class="pt-1"></div>
+
+  <div class="container">
+    <h4>Output</h4>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" data-toggle="tab" href="#tab-text">Text</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#tab-image">Image</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="tab" href="#tab-download">Object</a>
+      </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div id="tab-text" class="container tab-pane active"><br>
+        <div class="form-group">
+          <button type="button" class="btn btn-light btn-sm btn-block" id="clear-text-button">Clear Text</button>
+          <textarea class="form-control" id="output-textarea" rows="16"></textarea>
+        </div>
+      </div>
+      <div id="tab-image" class="container tab-pane fade"><br>
+        <a href="#" id="image-link">
+          <img class="img-fluid" id="image-field" alt="Received image">
+        </a>
+        </div>
+      <div id="tab-download" class="container tab-pane fade"><br>
+        <h4>Received object data</h4>
+        <output id="rcvd-length"> xx byte</output>
+        <a href="#" id="file-link">Download</a>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+  <script src="../webusbtmc/webusbtmc.js"></script>
+  <script src="basiciopage.js"></script>
+
+  <script type="text/javascript">
+    $(window).on('beforeunload', function(){
+      var c=confirm();
+      if(c){
+        return true;
+      }
+      else
+      return false;
+    });
+  </script>
+
+</body>
+
+</html>

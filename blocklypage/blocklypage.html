@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="blocklypage-template.css">
+  <title>WebUSBTMC Blockly Demo</title>
+</head>
+
+<body>
+  <div class="container">
+    <h4>WebUSBTMC &#x2764 Blockly</h4>
+  </div>
+
+  <!-- Editable table -->
+  <div class="container">
+    <div id="device-table" class="table-responsive">
+      <table class="table table-bordered text-center" id="myTable">
+        <thead>
+          <tr>
+            <th scope="col" class="text-left">#</th>
+            <th scope="col" class="text-left">Device</th>
+            <th scope="col" class="text-left">Register</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td scope="row" class="text-left">
+              <span class="table-index">
+                0
+              </span>
+            </td>
+            <td class="text-left">-</td>
+            <td class="text-left">
+              <span class="table-register">
+                <button type="button" class="btn btn-primary btn-rounded btn-sm">Attach</button>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Editable table -->
+
+  <div class="container">
+    <p>
+      <button type="button" class="btn btn-primary btn-rounded btn-sm" id="run-button">Run</button>
+      <button type="button" class="btn btn-primary btn-rounded btn-sm" id="save-button">Save XML</button>
+      <button type="button" class="btn btn-primary btn-rounded btn-sm" id="load-button">Load XML</button>
+    </p>
+  </div>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-8" id="blockly-area">
+        <button class="btn btn-light btn-sm btn-block" type="button" id="blockly-collapse-button">
+          Blockly
+          <img src="svg/caret-up-square.svg" style="float:right" id="blockly-button-image">
+        </button>
+        <div class="collapse show" id="blockly-collapse-area">
+          <div id="blocklyDiv" style="display: inline-block; height: 60vh; width:100%">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" id="output-blockly-area">
+        <button class="btn btn-light btn-sm btn-block" type="button" id="output-blockly-collapse-button">
+          Output
+          <img src="svg/caret-up-square.svg" style="float:right" id="output-blockly-button-image">
+        </button>
+        <div class="collapse show" id="output-blockly-collapse-area">
+          <textarea id="output-blockly-textarea" style="display: inline-block; height: 60vh; width:100%;">
+          </textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+    <category name="Logic" colour="#5b80a5">
+      <block type="controls_if"></block>
+      <block type="logic_compare">
+        <field name="OP">EQ</field>
+      </block>
+      <block type="logic_operation">
+        <field name="OP">AND</field>
+      </block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean">
+        <field name="BOOL">TRUE</field>
+      </block>
+      <block type="logic_null"></block>
+      <block type="logic_ternary"></block>
+    </category>
+    <category name="Loops" colour="#5ba55b">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_whileUntil">
+        <field name="MODE">WHILE</field>
+      </block>
+      <block type="controls_for">
+        <field name="VAR">i</field>
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+        <value name="BY">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_forEach">
+        <field name="VAR">j</field>
+      </block>
+      <block type="controls_flow_statements">
+        <field name="FLOW">BREAK</field>
+      </block>
+    </category>
+    <category name="Math" colour="#5b67a5">
+      <block type="math_number">
+        <field name="NUM">0</field>
+      </block>
+      <block type="math_arithmetic">
+        <field name="OP">ADD</field>
+        <value name="A">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="B">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_single">
+        <field name="OP">ROOT</field>
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">9</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_trig">
+        <field name="OP">SIN</field>
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">45</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constant">
+        <field name="CONSTANT">PI</field>
+      </block>
+      <block type="math_number_property">
+        <mutation divisor_input="false"></mutation>
+        <field name="PROPERTY">EVEN</field>
+        <value name="NUMBER_TO_CHECK">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_round">
+        <field name="OP">ROUND</field>
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">3.1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_on_list">
+        <mutation op="SUM"></mutation>
+        <field name="OP">SUM</field>
+      </block>
+      <block type="math_modulo">
+        <value name="DIVIDEND">
+          <shadow type="math_number">
+            <field name="NUM">64</field>
+          </shadow>
+        </value>
+        <value name="DIVISOR">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constrain">
+        <value name="VALUE">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="LOW">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="HIGH">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+    </category>
+    <category name="Text" colour="#5ba58c">
+      <block type="text">
+        <field name="TEXT"></field>
+      </block>
+      <block type="text_join">
+        <mutation items="2"></mutation>
+      </block>
+      <block type="text_append">
+        <field name="VAR">item</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_length">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_isEmpty">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_indexOf">
+        <field name="END">FIRST</field>
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+        <value name="FIND">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_charAt">
+        <mutation at="true"></mutation>
+        <field name="WHERE">FROM_START</field>
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_getSubstring">
+        <mutation at1="true" at2="true"></mutation>
+        <field name="WHERE1">FROM_START</field>
+        <field name="WHERE2">FROM_START</field>
+        <value name="STRING">
+          <block type="variables_get">
+            <field name="VAR">text</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_changeCase">
+        <field name="CASE">UPPERCASE</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_trim">
+        <field name="MODE">BOTH</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_prompt_ext">
+        <mutation type="TEXT"></mutation>
+        <field name="TYPE">TEXT</field>
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="Lists" colour="#745ba5">
+      <block type="lists_create_with">
+        <mutation items="0"></mutation>
+      </block>
+      <block type="lists_create_with">
+        <mutation items="3"></mutation>
+      </block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">5</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf">
+        <field name="END">FIRST</field>
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getIndex">
+        <mutation statement="false" at="true"></mutation>
+        <field name="MODE">GET</field>
+        <field name="WHERE">FROM_START</field>
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_setIndex">
+        <mutation at="true"></mutation>
+        <field name="MODE">SET</field>
+        <field name="WHERE">FROM_START</field>
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getSublist">
+        <mutation at1="true" at2="true"></mutation>
+        <field name="WHERE1">FROM_START</field>
+        <field name="WHERE2">FROM_START</field>
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">list</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_split">
+        <mutation mode="SPLIT"></mutation>
+        <field name="MODE">SPLIT</field>
+        <value name="DELIM">
+          <shadow type="text">
+            <field name="TEXT">,</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_sort">
+        <field name="TYPE">NUMERIC</field>
+        <field name="DIRECTION">1</field>
+      </block>
+    </category>
+    <sep></sep>
+    <category name="Variables" colour="#a55b80" custom="VARIABLE"></category>
+    <category name="Functions" colour="#995ba5" custom="PROCEDURE"></category>
+    <category name="Timing" colour="#4055bf">
+      <block type="wait_seconds"></block>
+    </category>
+    <category name="WebUSBTMC" colour="#40bfbf">
+      <block type="read_from_device"></block>
+      <block type="write_to_device">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">*RST</field>
+          </shadow>
+        </value>  
+      </block>
+      <block type="clear_device"></block>
+      <block type="read_status_byte_from_device"></block>
+    </category>
+  </xml>
+
+  <xml xmlns="https://developers.google.com/blockly/xml" id="startBlocks" style="display: none">
+    <variables>
+      <variable id="vju;ZXQ;_[CT4a~j}TCC">result</variable>
+    </variables>
+    <block type="write_to_device" id=":XADSt8|s|aXb0/yEPKR" x="37" y="77">
+      <field name="INDEX">0</field>
+      <value name="TEXT">
+        <shadow type="text" id="rLrh*?;zokEMZF.8yxh)">
+          <field name="TEXT">*IDN?</field>
+        </shadow>
+      </value>
+      <next>
+        <block type="wait_seconds" id="-aK6LTmk2j7FJ3Q^rnbp">
+          <field name="SECONDS">0.1</field>
+          <next>
+            <block type="variables_set" id="J48b{x/Dfx_U)[Gl3b$,">
+              <field name="VAR" id="vju;ZXQ;_[CT4a~j}TCC">result</field>
+              <value name="VALUE">
+                <block type="read_from_device" id="g%jAuF9}3vVm``)b;N#J">
+                  <field name="VALUE">1024</field>
+                  <field name="INDEX">0</field>
+                </block>
+              </value>
+              <next>
+                <block type="controls_repeat_ext" id="+]iSDcmlWx]}pQ=C|!+E">
+                  <value name="TIMES">
+                    <shadow type="math_number" id="Lt=WeMme@wD=I]!~n7v2">
+                      <field name="NUM">1</field>
+                    </shadow>
+                  </value>
+                  <statement name="DO">
+                    <block type="text_print" id="x-{abQtX!UVJiETtcRNG">
+                      <value name="TEXT">
+                        <shadow type="text" id="W!eUUrZ0{AXtBByk3ovA">
+                          <field name="TEXT">The device is not compatible</field>
+                        </shadow>
+                        <block type="variables_get" id="+?px|o=a.2l%K^j^2UVw">
+                          <field name="VAR" id="vju;ZXQ;_[CT4a~j}TCC">result</field>
+                        </block>
+                      </value>
+                      <next>
+                        <block type="controls_if" id="|#32%uu)RjS}bH*35N-]">
+                          <value name="IF0">
+                            <block type="logic_compare" id="rtg04S3Z6fy1BOx3oKN%">
+                              <field name="OP">LTE</field>
+                              <value name="A">
+                                <block type="text_indexOf" id="%ufC.WXEsKSCr;B/kDsE">
+                                  <field name="END">FIRST</field>
+                                  <value name="VALUE">
+                                    <block type="variables_get" id="RJm(|RQ?H@7^x4rtUn)B">
+                                      <field name="VAR" id="vju;ZXQ;_[CT4a~j}TCC">result</field>
+                                    </block>
+                                  </value>
+                                  <value name="FIND">
+                                    <shadow type="text" id="QQ!%W4?KV^;A(WW63b!a">
+                                      <field name="TEXT">34405</field>
+                                    </shadow>
+                                  </value>
+                                </block>
+                              </value>
+                              <value name="B">
+                                <block type="math_number" id="K1%/J,Xc48(`-2v@j~Ct">
+                                  <field name="NUM">0</field>
+                                </block>
+                              </value>
+                            </block>
+                          </value>
+                          <statement name="DO0">
+                            <block type="text_print" id="]|uf]+oc9sH?$SDtag01">
+                              <value name="TEXT">
+                                <shadow type="text" id="60rRL_v63%|Lr7BS65Gq">
+                                  <field name="TEXT">The device is not compatible</field>
+                                </shadow>
+                              </value>
+                              <next>
+                                <block type="controls_flow_statements" id="C5M.n{bO/Ls*81-d_WXn">
+                                  <field name="FLOW">BREAK</field>
+                                </block>
+                              </next>
+                            </block>
+                          </statement>
+                          <next>
+                            <block type="text_print" id="OylY2%p4T4=];Zq.Z7G@">
+                              <value name="TEXT">
+                                <shadow type="text" id="%b4VbHqI|,hfwhH((s$3">
+                                  <field name="TEXT">The device is compatible</field>
+                                </shadow>
+                              </value>
+                            </block>
+                          </next>
+                        </block>
+                      </next>
+                    </block>
+                  </statement>
+                </block>
+              </next>
+            </block>
+          </next>
+        </block>
+      </next>
+    </block>
+  </xml>
+
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/blockly@3.20191014.3/blockly.min.js"></script>
+  <script src="JS-Interpreter/acorn_interpreter.js"></script>
+  <script src="blockly/blocks/blocks_timing.js"></script>
+  <script src="blockly/blocks/blocks_webusbtmc.js"></script>
+  <script src="../webusbtmc/webusbtmc.js"></script>
+  <script src="blocklypage.js"></script>
+  
+  <script type="text/javascript">
+    $(window).on('beforeunload', function(){
+      var c=confirm();
+      if(c){
+        return true;
+      }
+      else
+      return false;
+    });
+  </script>
+  
+</body>
+</html>
