@@ -1,5 +1,7 @@
 'use strict';
 
+import Webusbtmc from '../webusbtmc/webusbtmc.js';
+
 let deviceName;
 let tmc = new Webusbtmc();
 let blobURL;
