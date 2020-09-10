@@ -35,12 +35,15 @@
  [WebUSBTMC with Blockly](blocklypage) is the simplest and easiest way to control your instruments.
  You can write automation program with [Blockly](https://developers.google.com/blockly) and run the program in browser sandbox using [JS-Interpreter](https://neil.fraser.name/software/JS-Interpreter/docs.html).
  
+### Take a screenshot
+ [Take a screenshot](screenshotpage) is the easiest way to get screenshots from your instruments.
+ You don't need to extra flash drives. You can check screenshot images immediately and save it. 
 
 ## Setup
 ### Windows
  You need to install the WinUSB driver to your instrument with Zadig.
  If you've already install NI-VISA, Keysight IO Libraries Suite or some others, you just replace the usbtmc driver to the WinUSB driver using Zadig.  
- You can [uninstall the WinUSB driver](https://github.com/pbatard/libwdi/wiki/FAQ#Help_Zadig_replaced_the_driver_for_the_wrong_device_How_do_I_restore_it) when you want to use the original usbtmc driver again. Don't forget to tick the “Delete the driver software for this device” Box.  
+ You can [uninstall the WinUSB driver](https://github.com/pbatard/libwdi/wiki/FAQ#Help_Zadig_replaced_the_driver_for_the_wrong_device_How_do_I_restore_it) when you want to use the original usbtmc driver again. Don't forget to tick the "Delete the driver software for this device" Box.  
  Do not uninstall "USB Test and Measurement Devices".
 
 ### Linux and Raspberry Pi
