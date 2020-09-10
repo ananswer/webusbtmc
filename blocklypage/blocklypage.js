@@ -1,4 +1,7 @@
 'use strict';
+
+import Webusbtmc from '../webusbtmc/webusbtmc.js';
+
 var toolbox = document.getElementById('toolbox');
 var blocklyArea = document.getElementById('blockly-collapse-area');
 var blocklyDiv = document.getElementById('blocklyDiv');

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="screenshotpage-template.css">
+  <title>Taka a screenshot from an oscilloscope</title>
+</head>
+
+<body>
+  <div class="container">
+    <button class="btn btn-secondary btn-sm btn-block" type="button" id="connect-button">
+      <i class="fa fa-plug"></i> Connect
+    </button>
+    <div class="collapse" id="windows-advice-text">
+      For windows users; You need to <a href="https://github.com/ananswer/webusbtmc/#windows">install usb driver</a>
+    </div>
+  </div>
+
+  <div class="pt-3"></div>
+
+  <div class="container">
+    <button type="button" class="btn btn-secondary btn-block" id="takeashot-button">
+      <i class="fa fa-camera"></i> Take a screenshot
+    </button>
+  </div>
+
+  <div class="pt-2"></div>
+
+  <div class="container">
+    <div id="image-field"></div>
+  </div>
+
+  <div class="pt-2"></div>
+
+  <div class="container">
+    <a class="mb-2 btn btn-secondary btn-block" id="download-link" href="#" role="button">
+      <i class="fa fa-file"></i> Download
+    </a>
+  </div>
+
+  <div class="container">
+    <p>
+      <button class="btn btn-light btn-sm" type="button" data-toggle="collapse" data-target="#itdoesntwork" aria-expanded="false" aria-controls="itdoesntwork" id="help-button">
+        It doesn't work?
+      </button>
+    </p>
+    <div class="collapse" id="itdoesntwork">
+      <div class="form-group">
+        <label for="command-input">Screenshot command</label>
+        <input class="form-control" id="command-input" aria-describedby="commandHelp" placeholder="Enter command">
+        <small id="commandHelp" class="form-text text-muted">You can set screenshot command manually.</small>
+      </div>
+      <div class="form-group">
+        <label for="yourDevice-textarea">About your device</label>
+        <textarea class="form-control" id="yourDevice-textarea" aria-describedby="yourDeviceHelp" rows="3"></textarea>
+        <small id="yourDeviceHelp" class="form-text text-muted">Please feel free to aske me with above text when you got trouble.</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script type="module" src="screenshotpage.js"></script>
+
+  <script type="text/javascript">
+    $(window).on('beforeunload', function(){
+      var c=confirm();
+      if(c){
+        return true;
+      }
+      else
+      return false;
+    });
+  </script>
+
+</body>
+
+</html>

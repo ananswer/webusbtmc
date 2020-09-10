@@ -727,3 +727,5 @@ class Webusbtmc {
 
 
 }
+
+export default Webusbtmc;
