@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="speechrecognition-template.css">
+  <title>Speech recognition with M&T devices</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <button class="btn btn-secondary btn-sm btn-block" type="button" id="connect-button">
+    <i class="bi bi-plug"></i> Connect
+    </button>
+    <div class="collapse" id="windows-advice-text">
+      For windows users; You need to <a href="https://github.com/ananswer/webusbtmc/#windows">install usb driver</a>
+    </div>
+  </div>
+
+  <div class="pt-3"></div>
+
+  <div class="container">
+    <div class="input-group mb-3">
+      <button type="button" class="btn btn-secondary btn-group" id="recognition-button">
+        Start speech recognition
+      </button>
+      <div class="input-group-append">
+        <div class="btn-group language">
+          <select class="input-large form-control" id="language-selector">
+            <option value="af-ZA">af-ZA</option>
+            <option value="am-ET">am-ET</option>
+            <option value="az-AZ">az-AZ</option>
+            <option value="bn-BD">bn-BD</option>
+            <option value="bn-IN">bn-IN</option>
+            <option value="id-ID">id-ID</option>
+            <option value="ms-MY">ms-MY</option>
+            <option value="ca-ES">ca-ES</option>
+            <option value="cs-CZ">cs-CZ</option>
+            <option value="da-DK">da-DK</option>
+            <option value="de-DE">de-DE</option>
+            <option value="en-AU">en-AU</option>
+            <option value="en-CA">en-CA</option>
+            <option value="en-IN">en-IN</option>
+            <option value="en-KE">en-KE</option>
+            <option value="en-TZ">en-TZ</option>
+            <option value="en-GH">en-GH</option>
+            <option value="en-NZ">en-NZ</option>
+            <option value="en-NG">en-NG</option>
+            <option value="en-ZA">en-ZA</option>
+            <option value="en-PH">en-PH</option>
+            <option value="en-GB">en-GB</option>
+            <option value="en-US">en-US</option>
+            <option value="es-AR">es-AR</option>
+            <option value="es-BO">es-BO</option>
+            <option value="es-CL">es-CL</option>
+            <option value="es-CO">es-CO</option>
+            <option value="es-CR">es-CR</option>
+            <option value="es-EC">es-EC</option>
+            <option value="es-SV">es-SV</option>
+            <option value="es-ES">es-ES</option>
+            <option value="es-US">es-US</option>
+            <option value="es-GT">es-GT</option>
+            <option value="es-HN">es-HN</option>
+            <option value="es-MX">es-MX</option>
+            <option value="es-NI">es-NI</option>
+            <option value="es-PA">es-PA</option>
+            <option value="es-PY">es-PY</option>
+            <option value="es-PE">es-PE</option>
+            <option value="es-PR">es-PR</option>
+            <option value="es-DO">es-DO</option>
+            <option value="es-UY">es-UY</option>
+            <option value="es-VE">es-VE</option>
+            <option value="eu-ES">eu-ES</option>
+            <option value="fil-PH">fil-PH</option>
+            <option value="fr-FR">fr-FR</option>
+            <option value="jv-ID">jv-ID</option>
+            <option value="gl-ES">gl-ES</option>
+            <option value="gu-IN">gu-IN</option>
+            <option value="hr-HR">hr-HR</option>
+            <option value="zu-ZA">zu-ZA</option>
+            <option value="is-IS">is-IS</option>
+            <option value="it-IT">it-IT</option>
+            <option value="it-CH">it-CH</option>
+            <option value="kn-IN">kn-IN</option>
+            <option value="km-KH">km-KH</option>
+            <option value="lv-LV">lv-LV</option>
+            <option value="lt-LT">lt-LT</option>
+            <option value="ml-IN">ml-IN</option>
+            <option value="mr-IN">mr-IN</option>
+            <option value="hu-HU">hu-HU</option>
+            <option value="lo-LA">lo-LA</option>
+            <option value="nl-NL">nl-NL</option>
+            <option value="ne-NP">ne-NP</option>
+            <option value="nb-NO">nb-NO</option>
+            <option value="pl-PL">pl-PL</option>
+            <option value="pt-BR">pt-BR</option>
+            <option value="pt-PT">pt-PT</option>
+            <option value="ro-RO">ro-RO</option>
+            <option value="si-LK">si-LK</option>
+            <option value="sl-SI">sl-SI</option>
+            <option value="su-ID">su-ID</option>
+            <option value="sk-SK">sk-SK</option>
+            <option value="fi-FI">fi-FI</option>
+            <option value="sv-SE">sv-SE</option>
+            <option value="sw-TZ">sw-TZ</option>
+            <option value="sw-KE">sw-KE</option>
+            <option value="ka-GE">ka-GE</option>
+            <option value="hy-AM">hy-AM</option>
+            <option value="ta-IN">ta-IN</option>
+            <option value="ta-SG">ta-SG</option>
+            <option value="ta-LK">ta-LK</option>
+            <option value="ta-MY">ta-MY</option>
+            <option value="te-IN">te-IN</option>
+            <option value="vi-VN">vi-VN</option>
+            <option value="tr-TR">tr-TR</option>
+            <option value="ur-PK">ur-PK</option>
+            <option value="ur-IN">ur-IN</option>
+            <option value="el-GR">el-GR</option>
+            <option value="bg-BG">bg-BG</option>
+            <option value="ru-RU">ru-RU</option>
+            <option value="sr-RS">sr-RS</option>
+            <option value="uk-UA">uk-UA</option>
+            <option value="ko-KR">ko-KR</option>
+            <option value="cmn-Hans-CN">cmn-Hans-CN</option>
+            <option value="cmn-Hans-HK">cmn-Hans-HK</option>
+            <option value="cmn-Hant-TW">cmn-Hant-TW</option>
+            <option value="yue-Hant-HK">yue-Hant-HK</option>
+            <option value="ja-JP">ja-JP</option>
+            <option value="hi-IN">hi-IN</option>
+            <option value="th-TH">th-TH</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <fieldset disabled>
+      <div class="mb-3">
+        <label for="whatyousaid" class="form-label">You spoke</label>
+        <input type="text" class="form-control" id="whatyousaid">
+      </div>
+    </fieldset>
+    <label for="test12" class="form-label">Keywords and commands</label>
+    <div id="test12">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter Keyword" id="input-keyword">
+        <input type="text" class="form-control" placeholder="Enter Command" id="input-command">
+      </div>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter Keyword2" id="input-keyword2">
+        <input type="text" class="form-control" placeholder="Enter Command2" id="input-command2">
+      </div>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter Keyword3" id="input-keyword3">
+        <input type="text" class="form-control" placeholder="Enter Command3" id="input-command3">
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Optional JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.6.0/dist/umd/popper.min.js" integrity="sha384-KsvD1yqQ1/1+IA7gi3P0tyJcT3vR+NdBTt13hSJ2lnve8agRGXTTyNaBYmCR/Nwi" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.min.js" integrity="sha384-nsg8ua9HAw1y0W1btsyWgBklPnCUAFLuTMS2G72MMONqmOymq585AcH49TLBQObG" crossorigin="anonymous"></script>
+  <script type="module" src="speechrecognitionpage.js"></script>
+
+
+  <!-- beforeunload -->
+  <script type="text/javascript">
+    window.onbeforeunload = function () {
+      var c = confirm();
+      if (c) {
+        return true;
+      }
+      else
+        return false;
+    }
+
+  </script>
+
+</body>
+
+</html>

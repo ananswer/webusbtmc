@@ -1,0 +1,52 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Keysight USB Modular instruments unlocker</title>
+
+</head>
+
+<body>
+  Keysight(or Agilent) U27xx modular devices stay on 'firmware update' mode at power-on.<br>
+  You can change to USBTMC device when you click the unlock button.
+  <p>
+    <button id="unlock">Unlock</button>
+  </p>
+  <script>
+    document.getElementById('unlock').onclick = function() {
+      let device;
+      const filters = [
+        {'classCode': 0x00, 'subclassCode': 0x00, 'protocolCode': 0x00},
+      ];
+      navigator.usb.requestDevice({'filters': filters}).then((result) => {
+        device = result;
+        return device.open();
+
+      }).then(()=>{
+        if (device.vendorId != 0x0957) {
+          throw new Error("The device is not suitable");
+        }
+        return device.claimInterface(device.configuration.interfaces[0].interfaceNumber);
+
+      }).then(()=>{
+          const data = new Uint8Array([0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00]);
+          return device.controlTransferOut({
+            'requestType': 'vendor',
+            'recipient': 'device',
+            'request': 0x0C,
+            'value': 0,
+            'index': 0x475}, data
+          );
+
+      }).then(()=>{
+        alert('Unlock Success');
+      }).catch((error) => {
+        alert(error);
+      });
+    };
+
+  </script>
+</body>
+</html>
