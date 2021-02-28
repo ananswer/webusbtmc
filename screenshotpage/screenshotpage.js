@@ -139,8 +139,8 @@ $(document).ready(function () {
       $takeashotButton.prop('disabled', true);
       $takeashotButton.html(SpinnerWidget + ' Take a screenshot');
 
-      const isExpanded = $helpButton.attr('aria-expanded');
-      if (isExpanded) {
+      const expanded = $helpButton.attr('aria-expanded');
+      if (expanded == 'true') {
         worker.command = $inputCommandText.val();
       }
 
