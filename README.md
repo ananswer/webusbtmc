@@ -39,6 +39,12 @@
  [Take a screenshot](screenshotpage) is the easiest way to get screenshots from your instruments.
  You don't need to extra flash drives. You can check screenshot images immediately and save it. 
 
+### WebUSBTMC with SpeechRecognition
+ [WebUSBTMC with SpeechRecognition](speechrecognitionpage) is voice control app using the SpeechRecognition API. 
+
+### Unlock USB modular devices
+ [Unlock USB modular devices](unlockusbmodular) is supplemental. Some Keysight(or Agilent) usb modular instruments are stay on 'firmware update' mode at power-on. This app could change 'firmware update' mode to the usbtmc mode. 
+
 ## Setup
 ### Windows
  You need to install the WinUSB driver to your instrument with Zadig.

@@ -37,7 +37,8 @@ class Takescreenshot {
     this.#device = device;
 
     // productId
-    if(this.#device.vendorId == 0x0957) {
+    if (this.#device.vendorId == 0x0957 ||
+        this.#device.vendorId == 0x2a8d) {
         // keysight or agilent
         this.#command = ':DISPlay:DATA? PNG';
         this.#isBinaryBlock = true;
