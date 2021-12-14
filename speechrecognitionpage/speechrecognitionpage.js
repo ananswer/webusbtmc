@@ -55,7 +55,7 @@ connectButton.onclick = function() {
     navigator.usb.requestDevice({'filters': filters}).then((device) => {
       worker.open(device).then(() => {
         deviceName = device.productName.replace(/\s/g,'');
-        connectButton.innerHTML = PlugIcon + ' ' + device.productName + 'is connected';
+        connectButton.innerHTML = PlugIcon + ' ' + device.productName + ' is connected';
 
         isConnected = true;
       });

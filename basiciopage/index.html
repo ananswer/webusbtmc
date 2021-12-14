@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.css" integrity="sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=" crossorigin="anonymous">
   <!-- Custom styles for this template -->
   <link rel="stylesheet" href="basiciopage-template.css">
   <title>WebUSBTMC Test page</title>
@@ -26,47 +27,47 @@
     <div class="input-group mb-3">
       <input type="text" class="form-control" placeholder="Select or Enter Command" id="input-text">
       <div class="input-group-append">
-        <div class="btn-group commands">
-          <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">Select</button>
-          <div class="dropdown-menu">
-            <button class="dropdown-item" value="*IDN?">*IDN?</button>
-            <button class="dropdown-item" value="*CLS">*CLS</button>
-            <button class="dropdown-item" value="*RST">*RST</button>
-            <button class="dropdown-item" value="*TST?">*TST?</button>
-            <button class="dropdown-item" value="*OPC">*OPC</button>
-            <button class="dropdown-item" value="*OPC?">*OPC?</button>
-            <button class="dropdown-item" value="*WAI">*WAI</button>
-            <button class="dropdown-item" value="*ESE">*ESE</button>
-            <button class="dropdown-item" value="*ESR">*ESE?</button>
-            <button class="dropdown-item" value="*ESR?">*ESR?</button>
-            <button class="dropdown-item" value="*SRE">*SRE</button>
-            <button class="dropdown-item" value="*SRE?">*SRE?</button>
-            <button class="dropdown-item" value="*STB?">*STB?</button>
-            <button class="dropdown-item" value=":DISP:DATA?">:DISPlay:DATA?</button>
-            <button class="dropdown-item" value=":HCOP:DATA?">:HCOPy:DATA?</button>
-            <button class="dropdown-item" value="HARDC START">HARDCopy START</button>
-          </div>
+        <div class="dropdown" id="command-group">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="common-commands" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            Select
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="common-commands">
+            <li class="dropdown-item">*IDN?</li>
+            <li class="dropdown-item">*CLS</li>
+            <li class="dropdown-item">*RST</li>
+            <li class="dropdown-item">*TST?</li>
+            <li class="dropdown-item">*OPC</li>
+            <li class="dropdown-item">*OPC?</li>
+            <li class="dropdown-item">*WAI</li>
+            <li class="dropdown-item">*ESE</li>
+            <li class="dropdown-item">*ESE?</li>
+            <li class="dropdown-item">*ESR?</li>
+            <li class="dropdown-item">*SRE</li>
+            <li class="dropdown-item">*SRE?</li>
+            <li class="dropdown-item">*STB?</li>
+            <li class="dropdown-item">:DISPlay:DATA?</li>
+            <li class="dropdown-item">:HCOPy:DATA?</li>
+            <li class="dropdown-item">HARDCopy START</li>
+          </ul>
         </div>
       </div>
     </div>
 
     <div class="btn-group">
       <button type="button" class="btn btn-primary" id="wr-button">Write</button>
-      <div class="btn-group button-names">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="wr-which">Data</button>
-        <div class="dropdown-menu dropdown-menu-right" style="min-width: 400px;">
-          <button class="dropdown-item" value="Data">Data</button>
+      <div class="dropdown btn-group button-names">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button" id="wr-which"
+          data-bs-toggle="dropdown" aria-expanded="false">Data</button>
+        <div class="dropdown-menu dropdown-menu-right" style="min-width: 400px;" aria-labelledby="wr-which">
+          <button class="dropdown-item" id="wr-transfer-data">Data</button>
           <div class="dropdown-divider"></div>
-          <button class="dropdown-item" value="Binary Data">Binary Data</button>
+          <button class="dropdown-item" id="wr-transfer-bin">Binary Data</button>
           <form class="px-4">
             <div class="input-group">
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="wr-inputGroupFileAddon">Upload</span>
-              </div>
-              <div class="custom-file">
-                <input type="file" class="custom-file-input" id="wr-filebutton"
-                  aria-describedby="wr-inputGroupFileAddon">
-                <label class="custom-file-label" for="wr-filebutton" id="wr-filename">Choose file</label>
+              <div class="input-group mb-3">
+                <label class="input-group-text" for="wr-filebutton">Upload</label>
+                <input type="file" class="form-control" id="wr-filebutton">
               </div>
             </div>
           </form>
@@ -80,28 +81,29 @@
   <div class="container">
     <div class="btn-group">
       <button type="button" class="btn btn-primary" id="rd-button">Read</button>
-      <div class="btn-group button-names">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown"
-          id="rd-which">Data</button>
-        <div class="dropdown-menu">
-          <button class="dropdown-item" value="Data">Data</button>
+      <div class="dropdown btn-group button-names">
+        <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown" type="button" id="rd-which"
+          data-bs-toggle="dropdown" aria-expanded="false">Data</button>
+        <div class="dropdown-menu" aria-labelledby="rd-which">
+          <button class="dropdown-item" id="rd-transfer-data">Data</button>
           <form class="px-4">
             <div class="form-group">
               <label for="rd-length">Bytes to read</label>
-              <input type="text" class="form-control" id="rd-length" placeholder="1024">
+              <input type="text" class="form-control" id="rd-length" placeholder="65535">
             </div>
           </form>
           <div class="dropdown-divider"></div>
-          <button class="dropdown-item" value="Binary Data">Binary Data</button>
+          <button class="dropdown-item" id="rd-transfer-bin">Binary Data</button>
         </div>
       </div>
-      <div class="btn-group button-names">
-        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="rd-as-how">as Text</button>
-        <div class="dropdown-menu">
-          <button class="dropdown-item" value="as Text">as Text</button>
-          <button class="dropdown-item" value="as Image">as Image</button>
-          <button class="dropdown-item" value="as Object">as Object</button>
-        </div>
+      <div class="dropdown btn-group button-names">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" id="rd-as-how"
+          data-bs-toggle="dropdown" aria-expanded="false">as Text</button>
+        <ul class="dropdown-menu" aria-labelledby="rd-as-how">
+          <li class="dropdown-item" id="rd-as-text">as Text</li>
+          <li class="dropdown-item" id="rd-as-image">as Image</li>
+          <li class="dropdown-item" id="rd-as-object">as Object</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -119,55 +121,62 @@
     <h4>Output</h4>
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <li class="nav-item">
-        <a class="nav-link active" data-toggle="tab" href="#tab-text">Text</a>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-pane" type="button"
+          role="tab" aria-controls="text-pane" aria-selected="true">Text</button>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#tab-image">Image</a>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button"
+          role="tab" aria-controls="image-pane" aria-selected="false">Image</button>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#tab-download">Object</a>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="object-tab" data-bs-toggle="tab" data-bs-target="#object-pane" type="button"
+          role="tab" aria-controls="object-pane" aria-selected="false">Object</button>
       </li>
     </ul>
 
     <!-- Tab panes -->
     <div class="tab-content">
-      <div id="tab-text" class="container tab-pane active"><br>
+      <div class="tab-pane fade show active" id="text-pane" role="tabpanel" aria-labelledby="text-tab">
         <div class="form-group">
-          <button type="button" class="btn btn-light btn-sm btn-block" id="clear-text-button">Clear Text</button>
+          <div class="d-grid gap-2">
+            <button class="btn btn-light btn-sm btn-block" type="button" id="clear-text-button">Clear Text</button>
+          </div>
           <textarea class="form-control" id="output-textarea" rows="16"></textarea>
         </div>
       </div>
-      <div id="tab-image" class="container tab-pane fade"><br>
-        <a href="#" id="image-link">
-          <img class="img-fluid" id="image-field" alt="Received image">
-        </a>
+      <div class="tab-pane fade" id="image-pane" role="tabpanel" aria-labelledby="image-tab">
+        Received image data
+        <div class='d-none' id="image-area">
+          <a href="#" id="image-link"><img class="img-fluid" id="image-field" alt="Received image"></a>
         </div>
-      <div id="tab-download" class="container tab-pane fade"><br>
-        <h4>Received object data</h4>
-        <output id="rcvd-length"> xx byte</output>
-        <a href="#" id="file-link">Download</a>
-        
+      </div>
+      <div class="tab-pane fade" id="object-pane" role="tabpanel" aria-labelledby="object-tab">
+        Received object data
+        <div class='d-none' id="object-area">
+          <output id="rcvd-length"> xx byte</output><a href="#" id="file-link">Download</a>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha256-85WHXrXVjFEoxDSBLNClPUOLEVNvf9FXcHfYpcYS4f0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha256-cMPWkL3FzjuaFSfEYESYmjF25hCIL6mfRSPnW8OVvM4=" crossorigin="anonymous"></script>
+  
   <script type="module" src="basiciopage.js"></script>
 
   <script type="text/javascript">
-    $(window).on('beforeunload', function(){
-      var c=confirm();
-      if(c){
+    const beforeUnload = (event) => {
+      event.preventDefault();
+      var c = confirm();
+      if (c) {
         return true;
       }
       else
-      return false;
-    });
+        return false;
+    };
+    window.onbeforeunload = beforeUnload;
   </script>
 
 </body>

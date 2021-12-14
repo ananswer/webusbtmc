@@ -5,43 +5,18 @@ import Takescreenshot from './takescreenshot.js';
 let isConnected = false;
 let deviceName;
 let worker = new Takescreenshot();
-let blobURL;
 
-const SpinnerWidget = '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>';
-const PlugIcon = '<i class="fa fa-plug"></i>';
-const CameraIcon = '<i class="fa fa-camera"></i>';
-const ImageHtml = '<img class="img-fluid" id="image" alt="Received image">';
+const spinnerWidget = '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>';
+const plugIcon = '<i class="bi bi-plug"></i>';
+const cameraIcon = '<i class="bi bi-camera"></i>';
 
-const $imageField = $('#image-field');
+const connectButton = document.getElementById('connect-button');
+const takeashotButton = document.getElementById('takeashot-button');
 
-const $connectButton = $('#connect-button');
-const $takeashotButton = $('#takeashot-button');
+const inputCommandText = document.getElementById('command-input');
+const yourDeviceTextarea = document.getElementById('yourDevice-textarea');
 
-const $helpButton = $('#help-button');
-const $inputCommandText = $('#command-input');
-const $yourDeviceTextarea = $('#yourDevice-textarea');
 
-function createDownloadLink(ref, name, bytes, ext) {
-  if (!name) {
-    return;
-  }
-
-  if (bytes === undefined || bytes === null) {
-    return;
-  }
-
-  let prevLink = $(ref).attr('href');
-  if (prevLink != '#') {
-    window.URL.revokeObjectURL(prevLink);
-    $(ref).attr('href', '#')
-  }
-
-  let file = new Blob([bytes], {type: 'octet/stream'});
-
-  $(ref).attr('href', URL.createObjectURL(file));
-  $(ref).attr('target', '_blank');
-  $(ref).attr('download', name + '.' + ext);
-}
 
 function checkMIMEType(data) {
   // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
@@ -78,7 +53,6 @@ function checkMIMEType(data) {
   return { blobtype: blobtype, extension : ext };
 }
 
-
 function display(result, name) {
   const tmp = checkMIMEType(result);
 
@@ -87,83 +61,79 @@ function display(result, name) {
   }
 
   const blob = new Blob([result], {type: tmp.blobtype});
-  if (blobURL) {
-    window.URL.revokeObjectURL(blobURL);
-  }
+  const screenshotImage = document.getElementById('screenshot-image');
+  let blobURL = screenshotImage.src;
+  window.URL.revokeObjectURL(blobURL);
   blobURL = window.URL.createObjectURL(blob);
+  screenshotImage.src = blobURL;
 
-  if($imageField.is(':empty')) {
-    $imageField.html(ImageHtml);
-  }
+  const donwloadLink = document.getElementById('download-link');
+  donwloadLink.href = blobURL;
+  donwloadLink.target = '_blank';
+  donwloadLink.download = name + '.' + tmp.extension;
 
-  $('#image').attr('src', blobURL);
-  createDownloadLink('#download-link', name, result, tmp.extension);
+  document.getElementById('image-area').classList.remove('d-none');
 }
 
-$(document).ready(function () {
-  $connectButton.on('click', function (event) {
-    if (isConnected == true) {
-      worker.close();
-      $connectButton.html(PlugIcon + ' Connect');
+connectButton.onclick = () => {
+  if (isConnected == true) {
+    worker.close();
+    connectButton.innerHTML = plugIcon + ' Connect';
+    isConnected = false;
+    takeashotButton.disabled = true;
+  } else {
+    const filters = [
+      {'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01},
+    ];
+    navigator.usb.requestDevice({'filters': filters}).then((device) => {
+      worker.open(device).then(() => {
+        deviceName = device.productName.replace(/\s/g,'');
+        connectButton.innerHTML = plugIcon + ' ' + device.productName + ' is connected';
+
+        inputCommandText.value = worker.command;
+        yourDeviceTextarea.value = 
+          'VID_' + device.vendorId.toString(16) + ' ' + 'PID_' + device.productId.toString(16) + '\n' +
+          '*IDN? => ' + worker.identifier;
+
+        isConnected = true;
+        takeashotButton.disabled = false;
+      });
+    }).catch((error) => {
+      alert(error);
       isConnected = false;
-      $takeashotButton.prop('disabled', true);
-    } else {
-      const filters = [
-        {'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01},
-      ];
-      navigator.usb.requestDevice({'filters': filters}).then((device) => {
-        worker.open(device).then(() => {
-          deviceName = device.productName.replace(/\s/g,'');
-          $connectButton.html(PlugIcon + ' ' + device.productName + 'is connected');
-
-          $inputCommandText.val(worker.command);
-          $yourDeviceTextarea.val(
-            'VID_' + device.vendorId.toString(16) + ' ' + 'PID_' + device.productId.toString(16) + '\n' +
-            '*IDN? => ' + worker.identifier
-          );
-
-          isConnected = true;
-          $takeashotButton.prop('disabled', false);
-        });
-      }).catch((error) => {
-        alert(error);
-        isConnected = false;
-        $takeashotButton.prop('disabled', true);
-      });
-    }
-  });
-  
-  $takeashotButton.prop('disabled', false).on('click', function (event) {
-    if (isConnected == true) {
-      $helpButton.show();
-      $takeashotButton.prop('disabled', true);
-      $takeashotButton.html(SpinnerWidget + ' Take a screenshot');
-
-      const expanded = $helpButton.attr('aria-expanded');
-      if (expanded == 'true') {
-        worker.command = $inputCommandText.val();
-      }
-
-      worker.capture().then((reult) => {
-        display(reult, deviceName)
-        $takeashotButton.html(CameraIcon + ' Take a screenshot');
-        $takeashotButton.prop('disabled', false);
-      }).catch((error) => {
-        alert(error);
-        $takeashotButton.html(CameraIcon + ' Take a screenshot');
-        $takeashotButton.prop('disabled', false);
-      });
-    }
-  });
-
-  $connectButton.html(PlugIcon + ' Connect');
-  $takeashotButton.html(CameraIcon + ' Take a screenshot');
-  $takeashotButton.prop('disabled', true);
-  $helpButton.hide();
-
-  if(navigator.platform.indexOf('Win') >= 0) {
-    $('#windows-advice-text').show();
+      takeashotButton.disabled = true;
+    });
   }
+};
 
-});
 
+takeashotButton.onclick = () => {
+  if (isConnected == true) {
+    document.getElementById('help-area').classList.remove('d-none');
+    takeashotButton.disabled = true;
+    takeashotButton.innerHTML = spinnerWidget + ' Take a screenshot';
+
+    const helpButton = document.getElementById('help-button');
+    const expanded = helpButton.getAttribute('aria-expanded');
+    if (expanded == 'true') {
+      worker.command = inputCommandText.value;
+    }
+
+    worker.capture().then((reult) => {
+      takeashotButton.innerHTML = cameraIcon + ' Take a screenshot';
+      takeashotButton.disabled = false;
+      display(reult, deviceName)
+    }).catch((error) => {
+      takeashotButton.innerHTML = cameraIcon + ' Take a screenshot';
+      takeashotButton.disabled = false;
+      alert(error);
+    });
+  }
+};
+
+
+window.onload = () => {
+  if(navigator.platform.indexOf('Win') >= 0) {
+    document.getElementById('windows-advice-text').classList.remove('d-none');
+  }
+};

@@ -1,85 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.css" integrity="sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css" integrity="sha256-xI9svxPNgINGMuNc6T4pgY5QN385llAJtoyzuf3rcbI=" crossorigin="anonymous">
   <!-- Custom styles for this template -->
   <link rel="stylesheet" href="blocklypage-template.css">
-  <title>WebUSBTMC Blockly Demo</title>
+  <title>Blockly with WebUSBTMC</title>
 </head>
 
 <body>
-  <div class="container">
-    <h4>WebUSBTMC &#x2764 Blockly</h4>
-  </div>
-
-  <!-- Editable table -->
-  <div class="container">
-    <div id="device-table" class="table-responsive">
-      <table class="table table-bordered text-center" id="myTable">
-        <thead>
-          <tr>
-            <th scope="col" class="text-left">#</th>
-            <th scope="col" class="text-left">Device</th>
-            <th scope="col" class="text-left">Register</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td scope="row" class="text-left">
-              <span class="table-index">
-                0
-              </span>
-            </td>
-            <td class="text-left">-</td>
-            <td class="text-left">
-              <span class="table-register">
-                <button type="button" class="btn btn-primary btn-rounded btn-sm">Attach</button>
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <!-- Editable table -->
-
-  <div class="container">
-    <p>
-      <button type="button" class="btn btn-primary btn-rounded btn-sm" id="run-button">Run</button>
-      <button type="button" class="btn btn-primary btn-rounded btn-sm" id="save-button">Save XML</button>
-      <button type="button" class="btn btn-primary btn-rounded btn-sm" id="load-button">Load XML</button>
-    </p>
-  </div>
-
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-8" id="blockly-area">
-        <button class="btn btn-light btn-sm btn-block" type="button" id="blockly-collapse-button">
-          Blockly
-          <img src="svg/caret-up-square.svg" style="float:right" id="blockly-button-image">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" id="navbar_area">
+      <div class="container-fluid">
+        BlocklyTMC
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse show" id="blockly-collapse-area">
-          <div id="blocklyDiv" style="display: inline-block; height: 60vh; width:100%">
-          </div>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+          <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+              <a class="bi bi-file nav-link active dropdown-toggle" id="navbarDropdownMenuLink" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                File
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                <li><a class="dropdown-item" id="new_button">New</a></li>
+                <li><a class="dropdown-item" id="open_button">Open</a></li>
+                <li><a class="dropdown-item" id="save_button">Save</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="bi bi-code btn btn-light" id="code_button">
+                Code
+              </button>
+            </li>
+            <li class="nav-item">
+              <button type="button" class="bi bi-gear btn btn-light" id="settings_button">
+                Settings
+              </button>
+            </li>
+
+          </ul>
         </div>
       </div>
-      <div class="col-md-4" id="output-blockly-area">
-        <button class="btn btn-light btn-sm btn-block" type="button" id="output-blockly-collapse-button">
-          Output
-          <img src="svg/caret-up-square.svg" style="float:right" id="output-blockly-button-image">
-        </button>
-        <div class="collapse show" id="output-blockly-collapse-area">
-          <textarea id="output-blockly-textarea" style="display: inline-block; height: 60vh; width:100%;">
-          </textarea>
+    </nav>
+  </div>
+
+  <div class="d-none" id="settings_panel">
+    Devices
+    <div class="pt-1"></div>
+    <button type="button" class="btn btn-primary btn-rounded btn-sm" id="add-device-button">Add</button>
+    <button type="button" class="btn btn-danger btn-rounded btn-sm" id="remove-device-button">Remove</button>
+
+    <table class="table" id="device-table">
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">#</th>
+          <th scope="col">Device</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="container-fluid" id="code_panel">
+    <div class="pt-1"></div>
+    <button type="button" class="btn btn-secondary" id="blockly-button">Blockly</button>
+    <button type="button" class="btn btn-secondary" id="bothside-button">Blockly+Output</button>
+    <button type="button" class="btn btn-secondary" id="output-button">Output</button>
+    <button type="button" class="btn btn-primary" id="run-button">Run</button>
+    <button type="button" class="btn btn-light" id="clear-output-button">Clear Output</button>
+    <div class="pt-1"></div>
+    <div class="row">
+      <div class="col-md-8" id="blockly-area-column">
+        <div class="d-flex flex-column">
+          <div id="blocklyArea"></div>
+          <div id="blocklyDiv" style="position: absolute"></div>
+        </div>
+      </div>
+      <div class="col-md-4" id="output-area-column">
+        <div class="d-flex flex-column">
+          <div class="border border-dark overflow-auto" id="outputArea"></div>
         </div>
       </div>
     </div>
   </div>
-  
+
+
+  <!-- Blockly elements -->
   <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
     <category name="Logic" colour="#5b80a5">
       <block type="controls_if"></block>
@@ -407,7 +424,7 @@
           <shadow type="text">
             <field name="TEXT">*RST</field>
           </shadow>
-        </value>  
+        </value>
       </block>
       <block type="clear_device"></block>
       <block type="read_status_byte_from_device"></block>
@@ -517,25 +534,33 @@
     </block>
   </xml>
 
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/blockly@3.20191014.3/blockly.min.js"></script>
-  <script src="JS-Interpreter/acorn_interpreter.js"></script>
+
+  <!-- Optional JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha256-85WHXrXVjFEoxDSBLNClPUOLEVNvf9FXcHfYpcYS4f0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha256-cMPWkL3FzjuaFSfEYESYmjF25hCIL6mfRSPnW8OVvM4=" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/blockly@3.20200924.4/blockly.min.js" integrity="sha256-a6zHC9KAAadfqdoBYjJGWF5iPuwkFqvia2IGwJAy2Gk=" crossorigin="anonymous"></script>
+
   <script src="blockly/blocks/blocks_timing.js"></script>
   <script src="blockly/blocks/blocks_webusbtmc.js"></script>
+
+  <script src="JS-Interpreter/acorn_interpreter.js"></script>
+
   <script type="module" src="blocklypage.js"></script>
-  
+
   <script type="text/javascript">
-    $(window).on('beforeunload', function(){
-      var c=confirm();
-      if(c){
+    const beforeUnload = (event) => {
+      event.preventDefault();
+      var c = confirm();
+      if (c) {
         return true;
       }
       else
-      return false;
-    });
+        return false;
+    };
+    window.onbeforeunload = beforeUnload;
   </script>
-  
+
 </body>
+
 </html>
