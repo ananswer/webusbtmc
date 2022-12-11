@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.css" integrity="sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css" integrity="sha256-xI9svxPNgINGMuNc6T4pgY5QN385llAJtoyzuf3rcbI=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.css"
+    integrity="sha256-o+AsfCHj7A1M5Xgm1kJmZiGEIvMQEzQqrXz2072Gkkg=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.0/font/bootstrap-icons.css"
+    integrity="sha256-xI9svxPNgINGMuNc6T4pgY5QN385llAJtoyzuf3rcbI=" crossorigin="anonymous">
   <!-- Custom styles for this template -->
   <link rel="stylesheet" href="screenshotpage-template.css">
   <title>Taka a screenshot from an oscilloscope</title>
@@ -53,30 +56,46 @@
   </div>
 
   <div class="pt-2"></div>
-  
+
   <div class="container">
     <div class="d-none" id="help-area">
-      <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#itdoesntwork" aria-expanded="false" aria-controls="itdoesntwork" id="help-button">
+      <button class="btn btn-light btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#itdoesntwork"
+        aria-expanded="false" aria-controls="itdoesntwork" id="help-button">
         It doesn't work?
       </button>
       <div class="collapse" id="itdoesntwork">
         <div class="form-group">
           <label for="command-input">Screenshot command</label>
           <input class="form-control" id="command-input" aria-describedby="commandHelp" placeholder="Enter command">
-          <small id="commandHelp" class="form-text text-muted">You can set screenshot command manually.</small>
+          <small id="commandHelp" class="form-text text-muted">You can customize the screenshot command to your
+            measurement instruments.</small>
+        </div>
+        <div class="form-group">
+          <label for="delay-input">Wait time</label>
+          <input class="form-control" id="delay-input" aria-describedby="commandHelp" placeholder="milli seconds">
+          <small id="delayHelp" class="form-text text-muted">Some measurement instruments require a wait time after
+            issuing a command request.</small>
+        </div>
+        <div class="form-group">
+          <input class="form-check-input" type="checkbox" id="binaryBlock-check" aria-describedby="binaryBlockHelp">
+          <label class="form-check-label" for="binaryBlock-check">The Binary Transfer Format is applied to the receive
+            process.</label>
         </div>
         <div class="form-group">
           <label for="yourDevice-textarea">About your device</label>
           <textarea class="form-control" id="yourDevice-textarea" aria-describedby="yourDeviceHelp" rows="3"></textarea>
-          <small id="yourDeviceHelp" class="form-text text-muted">Please feel free to aske me with above text when you got trouble.</small>
+          <small id="yourDeviceHelp" class="form-text text-muted">Please feel free to ask along with the above
+            information if you have any problems.</small>
         </div>
-      </div>  
+      </div>
     </div>
   </div>
 
   <!-- Optional JavaScript -->
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha256-85WHXrXVjFEoxDSBLNClPUOLEVNvf9FXcHfYpcYS4f0=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha256-cMPWkL3FzjuaFSfEYESYmjF25hCIL6mfRSPnW8OVvM4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+    integrity="sha256-85WHXrXVjFEoxDSBLNClPUOLEVNvf9FXcHfYpcYS4f0=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+    integrity="sha256-cMPWkL3FzjuaFSfEYESYmjF25hCIL6mfRSPnW8OVvM4=" crossorigin="anonymous"></script>
 
   <script type="module" src="screenshotpage.js"></script>
 

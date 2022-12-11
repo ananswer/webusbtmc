@@ -8,15 +8,14 @@ var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEv
 
 let recognition = new SpeechRecognition();
 
-let isConnected = false;
 let isRecognizing = false;
 let isStopRecognizing = false;
-let deviceName;
 let worker = new webusbtmc();
 let lastText;
 let count = 0;
 
-const PlugIcon = '<i class="bi bi-plug"></i>';
+const spinnerWidget = '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>';
+const plugIcon = '<i class="bi bi-plug"></i>';
 
 const connectButton = document.getElementById('connect-button');
 const recognitionButton = document.getElementById('recognition-button');
@@ -33,41 +32,40 @@ const inputCommand2 = document.getElementById('input-command2');
 const inputCommand3 = document.getElementById('input-command3');
 
 
-document.addEventListener("DOMContentLoaded", function(event) { 
-  if(navigator.platform.indexOf('Win') >= 0) {
-    const text = document.getElementById('windows-advice-text');
-    const bsText = new bootstrap.Collapse(text);
-    bsText.show();
-    bsText.dispose();
-  }
-  
-});
-
-connectButton.onclick = function() {
-  if (isConnected == true) {
+connectButton.onclick = () => {
+  if (worker.opened) {
     worker.close();
-    connectButton.innerHTML = PlugIcon + ' Connect';
-    isConnected = false;
+    connectButton.innerHTML = plugIcon + ' Connect';
   } else {
     const filters = [
-      {'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01},
+      { 'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01 },
     ];
-    navigator.usb.requestDevice({'filters': filters}).then((device) => {
-      worker.open(device).then(() => {
-        deviceName = device.productName.replace(/\s/g,'');
-        connectButton.innerHTML = PlugIcon + ' ' + device.productName + ' is connected';
+    navigator.usb.requestDevice({ 'filters': filters })
+      .then((device) => {
+        connectButton.innerHTML = spinnerWidget + ' Connecting..';
+        connectButton.disabled = true;
 
-        isConnected = true;
+        worker.open(device)
+          .then(() => {
+            const deviceName = worker.device.productName.replace(/\s/g, '');
+            connectButton.innerHTML = plugIcon + ' ' + deviceName + ' is connected';
+          })
+          .catch((error) => {
+            alert(error);
+            connectButton.innerHTML = plugIcon + ' Connect';
+          })
+          .finally(() => {
+            connectButton.disabled = false;
+          })
+      })
+      .catch((error) => {
+        alert(error);
       });
-    }).catch((error) => {
-      alert(error);
-      isConnected = false;
-    });
   }
 };
 
-recognitionButton.onclick = function () { 
-  if(!isRecognizing) {
+recognitionButton.onclick = () => {
+  if (!isRecognizing) {
     isStopRecognizing = false;
     voiceRecognition();
     recognitionButton.innerHTML = 'Stop speech recognition';
@@ -85,8 +83,8 @@ function voiceRecognition() {
   recognition.interimResults = true;
   recognition.lang = languageSelector.value;
 
-  recognition.onresult = function(event) {
-    if (typeof(event.results) == 'undefined') {
+  recognition.onresult = (event) => {
+    if (typeof (event.results) == 'undefined') {
       recognition.onend = null;
       recognition.stop();
       return;
@@ -96,7 +94,7 @@ function voiceRecognition() {
         let final_transcript = event.results[i][0].transcript;
         whatyousaid.value = final_transcript;
         let text = validateText(final_transcript);
-        if(text != lastText) {
+        if (text != lastText) {
           validateCommand(text);
         }
         lastText = '';
@@ -104,16 +102,16 @@ function voiceRecognition() {
         let interim_transcript = event.results[i][0].transcript;
         whatyousaid.value = interim_transcript;
         let text = validateText(interim_transcript);
-        if(text != lastText) {
+        if (text != lastText) {
           validateCommand(text);
         }
         lastText = text;
       }
     }
   }
-  
-  recognition.onend = function() {
-    if(!isStopRecognizing) {
+
+  recognition.onend = () => {
+    if (!isStopRecognizing) {
       voiceRecognition();
     }
     else {
@@ -121,7 +119,7 @@ function voiceRecognition() {
     }
   }
 
-  recognition.onerror = function(event) {
+  recognition.onerror = (event) => {
     whatyousaid.value = 'Error occurred in recognition: ' + event.error;
   }
 
@@ -155,13 +153,13 @@ function validateText(text) {
     index3 = text.lastIndexOf(keyword3);
   }
 
-  if(index >= 0 && index > index2 && index > index3) {
+  if (index >= 0 && index > index2 && index > index3) {
     validatedText = keyword;
   }
-  if(index2 >= 0 && index2 > index && index2 > index3) {
+  if (index2 >= 0 && index2 > index && index2 > index3) {
     validatedText = keyword2;
   }
-  if(index3 >= 0 && index3 > index && index3 > index2) {
+  if (index3 >= 0 && index3 > index && index3 > index2) {
     validatedText = keyword3;
   }
 
@@ -181,17 +179,17 @@ function validateCommand(text) {
   let keyword3 = inputKeyword3.value;
 
   if (keyword !== undefined && keyword !== '') {
-    if(validatedText.includes(keyword)) {
+    if (validatedText.includes(keyword)) {
       command = inputCommand.value;
     }
   }
   if (keyword2 !== undefined && keyword2 !== '') {
-    if(validatedText.includes(keyword2)) {
+    if (validatedText.includes(keyword2)) {
       command = inputCommand2.value;
     }
   }
   if (keyword3 !== undefined && keyword3 !== '') {
-    if(validatedText.includes(keyword3)) {
+    if (validatedText.includes(keyword3)) {
       command = inputCommand3.value;
     }
   }
@@ -202,10 +200,15 @@ function validateCommand(text) {
 
   console.log(count + ' ' + validatedText);
   count++;
-    
-  if (isConnected == true) {
+
+  if (worker.opened) {
     worker.write(command);
   }
-  
+
 }
 
+window.onload = () => {
+  if (navigator.platform.indexOf('Win') >= 0) {
+    document.getElementById('windows-advice-text').classList.remove('d-none');
+  }
+};
