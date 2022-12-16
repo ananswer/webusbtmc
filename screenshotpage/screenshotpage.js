@@ -2,8 +2,6 @@
 
 import Takescreenshot from './takescreenshot.js';
 
-let isConnected = false;
-let deviceName;
 let worker = new Takescreenshot();
 
 const spinnerWidget = '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>';
@@ -14,6 +12,8 @@ const connectButton = document.getElementById('connect-button');
 const takeashotButton = document.getElementById('takeashot-button');
 
 const inputCommandText = document.getElementById('command-input');
+const delayTimeText = document.getElementById('delay-input');
+const inputBinaryBlockCheck = document.getElementById('binaryBlock-check');
 const yourDeviceTextarea = document.getElementById('yourDevice-textarea');
 
 
@@ -22,7 +22,7 @@ function checkMIMEType(data) {
   // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
   let arr = (new Uint8Array(data)).subarray(0, 4);
   let header = '';
-  for(let i = 0; i < arr.length; i++) {
+  for (let i = 0; i < arr.length; i++) {
     header += arr[i].toString(16);
   }
 
@@ -50,66 +50,82 @@ function checkMIMEType(data) {
       break;
   }
 
-  return { blobtype: blobtype, extension : ext };
+  return { blobtype: blobtype, extension: ext };
 }
 
-function display(result, name) {
-  const tmp = checkMIMEType(result);
+function display(bytes, name) {
+  const tmp = checkMIMEType(bytes);
 
-  if(tmp.blobtype == 'unknown') {
-    return;
+  if (tmp.blobtype == 'unknown') {
+    alert("Failed to display: unknown blob type");
   }
 
-  const blob = new Blob([result], {type: tmp.blobtype});
-  const screenshotImage = document.getElementById('screenshot-image');
-  let blobURL = screenshotImage.src;
-  window.URL.revokeObjectURL(blobURL);
-  blobURL = window.URL.createObjectURL(blob);
-  screenshotImage.src = blobURL;
+  const blob = new Blob([bytes], { type: tmp.blobtype });
+
+  const reader = new FileReader();
+  reader.readAsDataURL(blob);
+  reader.onloadend = () => {
+    sessionStorage.setItem('image', reader.result);
+    const url = sessionStorage.getItem('image');
+    document.getElementById('screenshot-image').src = url;
+    document.getElementById('image-area').classList.remove('d-none');
+  }
 
   const donwloadLink = document.getElementById('download-link');
+  let blobURL = donwloadLink.href;
+  window.URL.revokeObjectURL(blobURL);
+  blobURL = window.URL.createObjectURL(blob);
   donwloadLink.href = blobURL;
   donwloadLink.target = '_blank';
   donwloadLink.download = name + '.' + tmp.extension;
 
-  document.getElementById('image-area').classList.remove('d-none');
 }
 
 connectButton.onclick = () => {
-  if (isConnected == true) {
+  if (worker.opened) {
     worker.close();
     connectButton.innerHTML = plugIcon + ' Connect';
-    isConnected = false;
     takeashotButton.disabled = true;
   } else {
     const filters = [
-      {'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01},
+      { 'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01 },
     ];
-    navigator.usb.requestDevice({'filters': filters}).then((device) => {
-      worker.open(device).then(() => {
-        deviceName = device.productName.replace(/\s/g,'');
-        connectButton.innerHTML = plugIcon + ' ' + device.productName + ' is connected';
+    navigator.usb.requestDevice({ 'filters': filters })
+      .then((device) => {
+        connectButton.innerHTML = spinnerWidget + ' Connecting..';
+        connectButton.disabled = true;
 
-        inputCommandText.value = worker.command;
-        yourDeviceTextarea.value = 
-          'VID_' + device.vendorId.toString(16) + ' ' + 'PID_' + device.productId.toString(16) + '\n' +
-          '*IDN? => ' + worker.identifier;
-
-        isConnected = true;
-        takeashotButton.disabled = false;
+        worker.open(device)
+          .then(() => {
+            inputCommandText.value = worker.command;
+            delayTimeText.value = worker.delay;
+            inputBinaryBlockCheck.checked = worker.isBinaryBlock;
+            yourDeviceTextarea.value =
+              'VID_' + device.vendorId.toString(16) + ' ' + 'PID_' + device.productId.toString(16) + '\n' +
+              '*IDN? => ' + worker.identifier;
+            const deviceName = worker.device.productName.replace(/\s/g, '');
+            connectButton.innerHTML = plugIcon + ' ' + deviceName + ' is connected';
+            takeashotButton.disabled = false;
+          })
+          .catch((error) => {
+            alert(error);
+            connectButton.innerHTML = plugIcon + ' Connect';
+            takeashotButton.disabled = true;
+          })
+          .finally(() => {
+            connectButton.disabled = false;
+            document.getElementById('help-area').classList.remove('d-none');
+          })
+      })
+      .catch((error) => {
+        alert(error);
       });
-    }).catch((error) => {
-      alert(error);
-      isConnected = false;
-      takeashotButton.disabled = true;
-    });
   }
 };
 
 
 takeashotButton.onclick = () => {
-  if (isConnected == true) {
-    document.getElementById('help-area').classList.remove('d-none');
+  if (worker.opened == true) {
     takeashotButton.disabled = true;
     takeashotButton.innerHTML = spinnerWidget + ' Take a screenshot';
 
@@ -117,11 +133,14 @@ takeashotButton.onclick = () => {
     const expanded = helpButton.getAttribute('aria-expanded');
     if (expanded == 'true') {
       worker.command = inputCommandText.value;
+      worker.delay = delayTimeText.value;
+      worker.isBinaryBlock = inputBinaryBlockCheck.checked;
     }
 
     worker.capture().then((reult) => {
       takeashotButton.innerHTML = cameraIcon + ' Take a screenshot';
       takeashotButton.disabled = false;
+      const deviceName = worker.device.productName.replace(/\s/g, '');
       display(reult, deviceName)
     }).catch((error) => {
       takeashotButton.innerHTML = cameraIcon + ' Take a screenshot';
@@ -133,7 +152,7 @@ takeashotButton.onclick = () => {
 
 
 window.onload = () => {
-  if(navigator.platform.indexOf('Win') >= 0) {
+  if (navigator.platform.indexOf('Win') >= 0) {
     document.getElementById('windows-advice-text').classList.remove('d-none');
   }
 };

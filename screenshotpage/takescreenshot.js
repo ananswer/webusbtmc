@@ -8,9 +8,8 @@ class Takescreenshot {
   #identifier;
 
   #command;
-  #delayCount;
+  #delay;
   #isBinaryBlock;
-  #imageSize;
 
   constructor() {
     this.#tmc = new Webusbtmc();
@@ -28,6 +27,26 @@ class Takescreenshot {
     this.#command = text;
   }
 
+  get delay() {
+    return this.#delay;
+  }
+
+  set delay(text) {
+    this.#delay = text;
+  }
+
+  get isBinaryBlock() {
+    return this.#isBinaryBlock;
+  }
+
+  set isBinaryBlock(value) {
+    this.#isBinaryBlock = value;
+  }
+
+  get opened() {
+    return this.#tmc.opened;
+  }
+
   get identifier() {
     return this.#identifier;
   }
@@ -36,41 +55,70 @@ class Takescreenshot {
     await this.#tmc.open(device);
     this.#device = device;
 
-    // productId
+    // vendorId
     if (this.#device.vendorId == 0x0957 ||
-        this.#device.vendorId == 0x2a8d) {
-        // keysight or agilent
-        this.#command = ':DISPlay:DATA? PNG';
-        this.#isBinaryBlock = true;
-        this.#delayCount = 100;
-        this.#imageSize = 0;
+      this.#device.vendorId == 0x2a8d) {
+      // Agilent Technologies, Inc.
+      // Keysight Technologies Inc.
+      this.#command = ':DISPlay:DATA? PNG';
+      this.#isBinaryBlock = true;
+      this.#delay = 100;
     }
-    else if(this.#device.vendorId == 0x0699) {
-        // tektronix
-        this.#command = 'HARDCopy START';
-        this.#isBinaryBlock = false;
-        this.#delayCount = 100;
-        this.#imageSize = 0x1FFFFF;   // ‭2,097,151‬ byte
+    else if (this.#device.vendorId == 0x0699) {
+      // Tektronix, Inc.
+      this.#command = 'HARDCopy START';
+      this.#isBinaryBlock = false;
+      this.#delay = 100;
+
+      await this.#tmc.delay(100);
+      await this.#tmc.clear();
     }
-    else if(this.#device.vendorId == 0x1AB1) {
-        // rigol
-        this.#command = ':DISPlay:DATA? ON,OFF,PNG';
-        this.#isBinaryBlock = true;
-        this.#delayCount = 100;
-        this.#imageSize = 0;
+    else if (this.#device.vendorId == 0x1AB1) {
+      // Rigol Technologies, Inc
+      this.#command = ':DISPlay:DATA? ON,OFF,PNG';
+      this.#isBinaryBlock = true;
+      this.#delay = 100;
+    }
+    else if (this.#device.vendorId == 0x0B21) {
+      // Yokogawa Electric Corporation
+      this.#command = ':IMAGe:SEND?';
+      this.#isBinaryBlock = true;
+      this.#delay = 100;
+    }
+    else if (this.#device.vendorId == 0x0AAD) {
+      // Rohde & Schwarz GmbH & Co. KG
+      this.#command = 'HCOP:DATA?';
+      this.#isBinaryBlock = true;
+      this.#delay = 100;
+    }
+    else if (this.#device.vendorId == 0x05FF) {
+      // LeCroy Corporation
+      this.#command = 'SCDP';
+      this.#isBinaryBlock = false;
+      this.#delay = 100;
+
+      // How to Capture Screen Images Remotely? - Teledyne LeCroy
+      await this.#tmc.delay(100);
+      await this.#tmc.write('HCSU DEV, PNG, PORT, NET, AREA, DSOWINDOW');
     }
     else {
       // unknown
       this.#command = '';
       this.#isBinaryBlock = true;
-      this.#delayCount = 100;
-      this.#imageSize = 0;
+      this.#delay = 200;
     }
 
+    await this.#tmc.delay(100);
     await this.#tmc.write('*IDN?');
     await this.#tmc.delay(100);
-    this.#identifier = await this.#tmc.read();
-    
+
+    let status = await this.#tmc.readStatusByteRegister();
+    if ((status & 0x10) === 0) {
+      this.#identifier = 'Cannot read identifier';
+    }
+    else {
+      this.#identifier = await this.#tmc.read();
+    }
   }
 
   async close() {
@@ -79,19 +127,20 @@ class Takescreenshot {
   }
 
   async capture() {
-    if(!this.#command) {
+    let image;
+
+    if (!this.#command) {
       throw new Error('Not supported device');
     }
 
     await this.#tmc.write(this.#command);
 
-    await this.#tmc.delay(this.#delayCount);
+    await this.#tmc.delay(this.#delay);
 
-    let image;
-    if(this.#isBinaryBlock == true) {
-        image = await this.#tmc.readBlockData();
+    if (this.#isBinaryBlock) {
+      image = await this.#tmc.readBlockData();
     } else {
-        image = await this.#tmc.readBytes(this.#imageSize);
+      image = await this.#tmc.readBytes(0x1FFFFF);
     }
 
     return image;

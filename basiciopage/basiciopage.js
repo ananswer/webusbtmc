@@ -2,11 +2,9 @@
 
 import Webusbtmc from '../webusbtmc/webusbtmc.js';
 
-let tmc = new Webusbtmc();
+let worker = new Webusbtmc();
 
-let isConnected;
 let deviceName;
-let blobURL;
 let binaryFile;
 let writeTransferType;
 let readTransferType;
@@ -24,11 +22,11 @@ const OutputTo = {
 };
 
 
-const SpinnerWidget = '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>';
+const spinnerWidget = '<span class="spinner-border spinner-border-sm mr-2" role="status" aria-hidden="true"></span>';
+const plugIcon = '<i class="bi bi-plug"></i>';
 
 const notification = document.getElementById('notification-message');
 const outputtextarea = document.getElementById('output-textarea');
-const devicenameText = document.getElementById('device-name');
 
 const connectButton = document.getElementById('connect-button');
 
@@ -72,7 +70,7 @@ function checkMIMEType(data) {
   // https://stackoverflow.com/questions/18299806/how-to-check-file-mime-type-with-javascript-before-upload
   let arr = (new Uint8Array(data)).subarray(0, 4);
   let header = '';
-  for(let i = 0; i < arr.length; i++) {
+  for (let i = 0; i < arr.length; i++) {
     header += arr[i].toString(16);
   }
 
@@ -100,7 +98,7 @@ function checkMIMEType(data) {
       break;
   }
 
-  return { blobtype: blobtype, extension : ext };
+  return { blobtype: blobtype, extension: ext };
 }
 
 function notify(message) {
@@ -119,7 +117,7 @@ function print(result) {
   else {
     const textDecoder = new TextDecoder();
     text = textDecoder.decode(result);
-    text = text.replace(tmc.terminatorRead, '');
+    text = text.replace(worker.terminatorRead, '');
   }
 
   if (outputtextarea.value) {
@@ -136,12 +134,12 @@ function display(dir, result, name) {
 
     const tmp = checkMIMEType(result);
 
-    if(tmp.blobtype == 'unknown') {
+    if (tmp.blobtype == 'unknown') {
       print('Unknown MIME type');
       return;
     }
 
-    const blob = new Blob([result], {type: tmp.blobtype});
+    const blob = new Blob([result], { type: tmp.blobtype });
     const link = document.getElementById('image-link');
     let blobURL = link.href;
     window.URL.revokeObjectURL(blobURL);
@@ -149,12 +147,12 @@ function display(dir, result, name) {
     link.href = blobURL;
     link.target = '_blank';
     link.download = name + '.' + tmp.extension;
-  
+
     const image = document.getElementById('image-field');
     image.src = blobURL;
-  
+
     document.getElementById('image-area').classList.remove('d-none');
-  
+
     print('Image data received');
   }
   else if (dir === OutputTo.Object) {
@@ -166,7 +164,7 @@ function display(dir, result, name) {
     link.href = blobURL;
     link.target = '_blank';
     link.download = name + '.bin';
-  
+
     document.getElementById('rcvd-length').innerHTML = result.byteLength + ' byte';
 
     document.getElementById('object-area').classList.remove('d-none');
@@ -178,67 +176,61 @@ function display(dir, result, name) {
   }
 }
 
-function connect(device) {
-  isConnected = false;
-  devicenameText.innerHTML = 'Connecting to ' + device.productName + '...';
-  tmc.open(device).then(() => {
-    deviceName = device.productName.replace(/\s/g, '');
-    devicenameText.innerHTML = device.productName + ' connected.';
-    connectButton.innerHTML = 'Disconnect';
-    isConnected = true;
-  }).catch((error) => {
-    devicenameText.innerHTML = '-';
-    notify(error);
-  });
-};
-
-function disconnect() {
-  tmc.close();
-  devicenameText.innerHTML = '-';
-  connectButton.innerHTML = 'Connect';
-  isConnected = false;
-};
-
-connectButton.onclick = function () {
-  if (isConnected === true) {
-    notify('');
-    disconnect();
+connectButton.onclick = () => {
+  if (worker.opened) {
+    worker.close();
+    connectButton.innerHTML = plugIcon + ' Connect';
   } else {
     const filters = [
       { 'classCode': 0xFE, 'subclassCode': 0x03, 'protocolCode': 0x01 },
     ];
-    navigator.usb.requestDevice({ 'filters': filters }).then((result) => {
-      notify('');
-      connect(result);
-    }).catch((error) => {
-      notify(error);
-    });
+    navigator.usb.requestDevice({ 'filters': filters })
+      .then((device) => {
+        connectButton.innerHTML = spinnerWidget + ' Connecting..';
+        connectButton.disabled = true;
+
+        worker.open(device)
+          .then(() => {
+            deviceName = worker.device.productName.replace(/\s/g, '');
+            connectButton.innerHTML = plugIcon + ' ' + deviceName + ' is connected';
+          })
+          .catch((error) => {
+            alert(error);
+            connectButton.innerHTML = plugIcon + ' Connect';
+          })
+          .finally(() => {
+            connectButton.disabled = false;
+          })
+      })
+      .catch((error) => {
+        alert(error);
+      });
   }
 };
 
-writeTransferDataButton.onclick = function () {
+writeTransferDataButton.onclick = () => {
   writeTransferType = TransferType.Normal;
   writeWhich.innerHTML = 'Data';
 }
 
-writeTransferBinaryButton.onclick = function () {
+writeTransferBinaryButton.onclick = () => {
   writeTransferType = TransferType.Binary;
   writeWhich.innerHTML = 'Binary Data';
 }
 
-writeButton.onclick = function () {
-  if (isConnected !== true) {
+writeButton.onclick = () => {
+  if (!worker.opened) {
     return;
   }
 
   notify('');
-  writeButton.innerHTML = SpinnerWidget + 'Write';
+  writeButton.innerHTML = spinnerWidget + ' Write';
   const text = inputtext.value;
   if (writeTransferType === TransferType.Binary && binaryFile !== undefined && binaryFile !== null) {
     const buffer = new Uint8Array(binaryFile);
 
     if (text === undefined || text === '') {
-      tmc.writeBytes(buffer).then(() => {
+      worker.writeBytes(buffer).then(() => {
         print('Data chunk was sent successfully');
         writeButton.innerHTML = 'Write';
       }).catch((error) => {
@@ -247,7 +239,7 @@ writeButton.onclick = function () {
       });
     }
     else {
-      tmc.writeBlockData(text, buffer).then(() => {
+      worker.writeBlockData(text, buffer).then(() => {
         print('Binary data was sent successfully');
         writeButton.innerHTML = 'Write';
       }).catch((error) => {
@@ -262,7 +254,7 @@ writeButton.onclick = function () {
       writeButton.innerHTML = 'Write';
     }
     else {
-      tmc.write(text).then(() => {
+      worker.write(text).then(() => {
         print(text);
         writeButton.innerHTML = 'Write';
       }).catch((error) => {
@@ -273,41 +265,41 @@ writeButton.onclick = function () {
   }
 }
 
-readTransferDataButton.onclick = function () {
+readTransferDataButton.onclick = () => {
   readTransferType = TransferType.Normal;
   readWhich.innerHTML = 'Data';
 }
 
-readTransferBinaryButton.onclick = function () {
+readTransferBinaryButton.onclick = () => {
   readTransferType = TransferType.Binary;
   readWhich.innerHTML = 'Binary Data';
 }
 
-readAsTextButton.onclick = function () {
+readAsTextButton.onclick = () => {
   readOutputTo = OutputTo.Text;
   readAsHow.innerHTML = 'as Text';
 }
 
-readAsImageButton.onclick = function () {
+readAsImageButton.onclick = () => {
   readOutputTo = OutputTo.Image;
   readAsHow.innerHTML = 'as Image';
 }
 
-readAsObjectButton.onclick = function () {
+readAsObjectButton.onclick = () => {
   readOutputTo = OutputTo.Object;
   readAsHow.innerHTML = 'as Object';
 }
 
-readButton.onclick = function () {
-  if (isConnected !== true) {
+readButton.onclick = () => {
+  if (!worker.opened) {
     return;
   }
 
   notify('');
-  readButton.innerHTML = SpinnerWidget + 'Read';
+  readButton.innerHTML = spinnerWidget + ' Read';
 
   if (readTransferType === TransferType.Binary) {
-    tmc.readBlockData().then((result) => {
+    worker.readBlockData().then((result) => {
       if (!result || result.length == 0) {
         print('Failed to receive the response');
       }
@@ -328,7 +320,7 @@ readButton.onclick = function () {
         length = 65535;
       }
     }
-    tmc.readBytes(length).then((result) => {
+    worker.readBytes(length).then((result) => {
       if (!result || result.length == 0) {
         print('Failed to receive the response');
       }
@@ -344,33 +336,33 @@ readButton.onclick = function () {
 }
 
 
-rstatusButton.onclick = function () {
-  if (isConnected !== true) {
+rstatusButton.onclick = () => {
+  if (!worker.opened) {
     return;
   }
 
   notify('');
-  tmc.readStatusByteRegister().then((result) => {
+  worker.readStatusByteRegister().then((result) => {
     print('0x' + decimalToHex(result));
   }).catch((error) => {
     notify(error);
   });
 }
 
-clearDeviceButton.onclick = function () {
-  if (isConnected !== true) {
+clearDeviceButton.onclick = () => {
+  if (!worker.opened) {
     return;
   }
 
   notify('');
-  tmc.clear().then(() => {
+  worker.clear().then(() => {
     print('Cleared');
   }).catch((error) => {
     notify(error);
   });
 }
 
-writeFileButton.onclick = function (e) {
+writeFileButton.onclick = (e) => {
   let file = e.target.files[0];
   if (file === undefined) {
     return;
@@ -384,15 +376,15 @@ writeFileButton.onclick = function (e) {
   }
 }
 
-clearTextButton.onclick = function () {
+clearTextButton.onclick = () => {
   outputtextarea.value = '';
 }
 
-window.onload = function () {
+window.onload = () => {
   let targetElements = document.getElementById('command-group').getElementsByClassName('dropdown-item');
 
   for (let element of targetElements) {
-    element.addEventListener('click', function () {
+    element.addEventListener('click', () => {
       inputtext.value = element.innerHTML;
     });
   }
