@@ -11,6 +11,8 @@ const cameraIcon = '<i class="bi bi-camera"></i>';
 const connectButton = document.getElementById('connect-button');
 const takeashotButton = document.getElementById('takeashot-button');
 
+const fetchDeviceInfoButton = document.getElementById('fetchDeviceInfo-button');
+
 const inputCommandText = document.getElementById('command-input');
 const delayTimeText = document.getElementById('delay-input');
 const inputBinaryBlockCheck = document.getElementById('binaryBlock-check');
@@ -101,8 +103,7 @@ connectButton.onclick = () => {
             delayTimeText.value = worker.delay;
             inputBinaryBlockCheck.checked = worker.isBinaryBlock;
             yourDeviceTextarea.value =
-              'VID_' + device.vendorId.toString(16) + ' ' + 'PID_' + device.productId.toString(16) + '\n' +
-              '*IDN? => ' + worker.identifier;
+              'VID_' + device.vendorId.toString(16) + ' ' + 'PID_' + device.productId.toString(16) + '\n';
             const deviceName = worker.device.productName.replace(/\s/g, '');
             connectButton.innerHTML = plugIcon + ' ' + deviceName + ' is connected';
             takeashotButton.disabled = false;
@@ -150,6 +151,17 @@ takeashotButton.onclick = () => {
   }
 };
 
+fetchDeviceInfoButton.onclick = () => {
+  if (worker.opened == true) {
+    worker.fetchDeviceInfo().then((reult) => {
+      yourDeviceTextarea.value =
+      'VID_' + worker.device.vendorId.toString(16) + ' ' + 'PID_' + worker.device.productId.toString(16) + '\n' +
+      '*IDN? => ' + reult;
+    }).catch((error) => {
+      alert(error);
+    });
+  }
+};
 
 window.onload = () => {
   if (navigator.platform.indexOf('Win') >= 0) {
