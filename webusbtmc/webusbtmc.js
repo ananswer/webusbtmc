@@ -378,9 +378,9 @@ class Webusbtmc {
       extraDataSize = dataSize - moduloFour + 4;
     }
 
-    console.log('finished =' + finished);
-    console.log('dataSize =' + dataSize);
-    console.log('extraDataSize =' + extraDataSize);
+    //console.log('finished =' + finished);
+    //console.log('dataSize =' + dataSize);
+    //console.log('extraDataSize =' + extraDataSize);
 
     const buffer = new ArrayBuffer(extraDataSize);
     const tmp = new Uint8Array(buffer);
