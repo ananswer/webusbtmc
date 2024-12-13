@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" integrity="sha384-XGjxtQfXaH2tnPFa9x+ruJTuLE3Aa6LhHSWRr1XeTyhezb4abCG4ccI5AkVDxqC+" crossorigin="anonymous">
+  <!-- Custom styles for this template -->
+  <link rel="stylesheet" href="style.css">
+  <title>Frequency Response Analysis with your oscilloscope</title>
+</head>
+
+<body>
+  <div class="container mt-3">
+    <!-- Connect Button -->
+    <div class="mt-3">
+      <div class="row">
+        <div class="col-9">
+          <button class="btn btn-secondary btn-sm w-100" type="button" id="connect-button">
+            <i class="bi bi-plug"></i> Connect
+          </button>
+        </div>
+        <div class="col-3 d-flex align-items-center">
+          <button type="button" class="btn btn-info btn-sm w-100" data-bs-toggle="modal" data-bs-target="#introductionModal">
+            <i class="bi bi-info-circle"></i> How to use
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="introductionModal" tabindex="-1" aria-labelledby="introductionModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="introductionModalLabel">Introduction</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>This application allows you to capture and analyze waveform data from an oscilloscope. You can visualize the data using various types of plots, including waveform and Bode plot.</p>
+            <p>The application assumes Channel 1 (Ch1) as the input and Channel 2 (Ch2) as the output on the oscilloscope. Based on this relationship, it calculates the transfer function G(s) = Vout/Vin, determining the frequency, gain, phase, and the complex number G(jω). This data is then plotted on Bode and Nyquist plots.</p>
+            <p>Typically, a sine wave is used to check the frequency response. The sine wave is generated using a function generator and injected into the input of the target circuit. The input is measured on Channel 1 (Ch1) of the oscilloscope, and the output of the target circuit is measured on Channel 2 (Ch2) of the oscilloscope.</p>
+            <p>The application sends commands to the oscilloscope to retrieve data. These commands are passive and do not alter any settings on the oscilloscope, ensuring that your oscilloscope's configuration remains unchanged.</p>
+            <h6>Tested Devices</h6>
+            <ul>
+              <li>TBS1000C</li>
+              <li>TBS2000B</li>
+            </ul>
+            <h6>Potentially compatible devices</h6>
+            <ul>
+              <li>Tektronix oscilloscopes</li>
+            </ul>
+            <h6>Steps to Use</h6>
+            <ol>
+              <li><strong>Connect:</strong> Click the <i class="bi bi-plug"></i> <b>Connect</b> button to connect to your oscilloscope.</li>
+              <li><strong>Capture Data:</strong> Once connected, click the <i class="bi bi-play"></i> <b>Fetch waveforms form scope</b> button  to capture waveform data from the oscilloscope.</li>
+              <li><strong>Auto Fetch:</strong> Enable the <b>Auto Fetch Data</b> checkbox to automatically capture data every 500 milliseconds. This interval can be adjusted based on the waveform length and rate.</li>
+            </ol>
+            <h6>Additional Features</h6>
+            <ul>
+              <li><strong>Save Data:</strong> Use each <i class="bi bi-download"></i> buttons to save Wavefrom data or Bode plot data.</li>
+              <li><strong>Load Data:</strong> Use the <i class="bi bi-upload"></i> button to load Bode plot data. For demonstration purposes, you can use the <a href="bode_plot_sample.csv" download="bode_plot_sample.csv">Sample data</a>.</li>
+              <li><strong>Toggle Visibility:</strong> Use the toggle buttons to show or hide specific charts like the Waveform, Lissajous Chart, Bode Plot, and Nyquist plot.</li>
+              <li><strong>Edit Data Points:</strong> Enable the <b>Enable Delete Points</b> checkbox to delete specific data points by clicking on them in the Bode plot and Nyquist plot. Use rectangular selection to delete multiple points.</li>
+              <li><strong>Trim Bode Plot:</strong> Click the <i class="bi bi-scissors"></i> <b>Trim Bode Plot</b> button to process and trim the current Bode plot data.</li>
+              <li><strong>Frequency Unit:</strong> Toggle between Hz and rad/s using the <i class="bi bi-arrow-repeat"></i> <b>Toggle Frequency Unit</b> button.</li>
+              <li><strong>TSV format:</strong> Use each <i class="bi bi-file-earmark-spreadsheet"></i> buttons to save waveform data or Bode plot data in TSV format.</li>
+            </ul>
+            <h6>Tips</h6>
+            <p>For improved frequency analysis, having more waveforms on the oscilloscope screen is generally advantageous, but too many can destabilize the computations. Adjust the horizontal range as needed based on the observed results. Similarly, if the amplitude is too low, accuracy may be compromised. Adjust the vertical range to ensure the waveforms are visible. Additionally, an excessively long record length on the oscilloscope can slow down data transfer, which may degrade the user experience. A record length of approximately 20k is suggested as a practical guideline.</p>
+            <h6>LTspice support</h6>
+            <p>Measured frequency characteristics can be imported and displayed in LTspice. By clicking on <b>Generate LTspice subckt</b>, you can download the subcircuit file named "bode_plot_data00x.sub." The following link contains the demo circuit "rc_circuits_fra.asc" and the component "FreqResLoader.asy" needed to use "bode_plot_data00x.sub." After downloading both, open the schematic in LTspice, change the value of the component (FreqResLoader) to "bode_plot_data00x," and run the simulation. This will enable you to compare the analytical results with the measured data.</p>
+            <a href="rc_circuits_fra.asc" download="rc_circuits_fra.asc">rc_circuits_fra.asc</a>
+            <a href="FreqResLoader.asy" download="FreqResLoader.asy">FreqResLoader.asy</a>
+            <p></p>
+            <h6>Disclaimer</h6>
+            <p>This application was developed to improve the understanding of electrical engineering and control engineering. Although it aims to be highly reliable, it cannot guarantee that it will not affect your devices. Please be aware of the risks and use it with caution.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Windows Advice Text -->
+    <div class="d-none" id="windows-advice-text">
+      For windows users; You need to <a href="https://github.com/ananswer/webusbtmc/#windows">install usb driver</a>
+    </div>
+
+    <!-- Fetch Button and Auto Fetch Checkbox -->
+    <div class="mt-3">
+      <div class="row">
+        <div class="col-9">
+          <button type="button" class="btn btn-secondary w-100" id="fetch-button" disabled>
+            <i class="bi bi-play"></i> Fetch waveforms form scope
+          </button>
+        </div>
+        <div class="col-3 d-flex align-items-center">
+          <input type="checkbox" id="auto-fetch-checkbox" class="form-check-input">
+          <label for="auto-fetch-checkbox" class="form-check-label ms-2">Auto Fetch Data</label>
+        </div>
+      </div>
+
+      <div class="form-check mt-3">
+        <input class="form-check-input" type="checkbox" id="enable-keydown-checkbox">
+        <label class="form-check-label" for="enable-keydown-checkbox">Enable Space Key for Fetch</label>
+      </div>
+    </div>
+
+    <!-- Waveform and Lissajous Charts Container -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Measured Data</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="tsv-waveform-button">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="export-waveform-button">
+            <i class="bi bi-download"></i>
+          </button>
+        </div>
+        <div class="btn-group me-2">
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="toggle-waveform-chart">
+            <i class="bi bi-eye-slash"></i> Chart
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="toggle-lissajous-chart">
+            <i class="bi bi-eye-slash"></i> Lissajous
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="w-100" id="chartContainer">
+        <div class="d-flex">
+          <div class="w-100" id="waveformContainer">
+            <canvas id="waveformChart"></canvas>
+          </div>
+          <div class="w-50" id="lissajousContainer" style="display:none;">
+            <canvas id="lissajousChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bode Plot Container -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Plot Data</h1>
+      <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="tsv-bodeplot-button">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+          </button>
+          <label class="btn btn-sm btn-outline-secondary" for="import-bodeplot-file">
+            <i class="bi bi-upload"></i>
+          </label>
+          <input type="file" id="import-bodeplot-file" class="d-none">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="export-bodeplot-button">
+            <i class="bi bi-download"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="copy2clipboard-bodeplot-button">
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+        <div class="btn-group me-2">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="generate-subckt-button">
+            Generate LTspice subckt
+          </button>
+        </div>
+        <div class="btn-group me-2">
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="toggle-bode-nyquist-plot">
+            <i class="bi bi-eye-slash"></i> Plots
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="toggle-nyquist-plot">
+            <i class="bi bi-eye-slash"></i> Nyquist
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3">
+      <div class="w-100" id="plotContainer">
+        <div class="d-flex">
+          <div class="w-100" id="bodePlotContainer">
+            <div class="w-100">
+              <canvas id="magnitudePlot"></canvas>
+            </div>
+            <div class="w-100">
+              <canvas id="phasePlot"></canvas>
+            </div>
+          </div>
+          <div class="w-50" id="nyquistPlotContainer" style="display:none;">
+            <canvas id="nyquistPlot"></canvas>
+          </div>
+        </div>
+
+        <div class="btn-toolbar justify-content-end mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <button class="btn btn-sm btn-outline-secondary" type="button" id="toggle-frequency-unit">
+              <i class="bi bi-arrow-repeat"></i> Change Frequency Unit
+            </button>
+          </div>
+          <div class="btn-group me-2">
+            <button class="btn btn-sm btn-outline-secondary" type="button" id="clear-plots-button">
+              <i class="bi bi-eraser"></i> Clear
+            </button>
+          </div>  
+          <div class="btn-group me-2">
+            <button class="btn btn-sm btn-outline-secondary" type="button" id="trimBodePlotButton">
+              <i class="bi bi-scissors"></i> Trim Bode Plot
+            </button>
+          </div>
+          <div class="btn-group me-2">
+            <input class="form-check-input" type="checkbox" id="enable-delete-switch">
+            <label class="form-check-label" for="enable-delete-switch">Enable Delete Points</label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- Optional JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" integrity="sha384-JUh163oCRItcbPme8pYnROHQMC6fNKTBWtRG3I3I0erJkzNgL7uxKlNwcrcFKeqF" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <script type="module" src="app.js"></script>
+  <script src="preprocess.js"></script>
+  <script src="analysis.js"></script>
+
+  <script type="text/javascript">
+    const beforeUnload = (event) => {
+      event.preventDefault();
+      var c = confirm();
+      if (c) {
+        return true;
+      }
+      else
+        return false;
+    };
+    window.onbeforeunload = beforeUnload;
+  </script>
+
+</body>
+
+</html>
