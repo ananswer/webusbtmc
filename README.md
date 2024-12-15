@@ -45,6 +45,10 @@ You don't need additional flash drives. You can view the screenshots immediately
 [Unlock USB Modular Devices](unlockusbmodular) is a supplemental tool.  
 Some Keysight (or Agilent) USB modular instruments remain in "firmware update" mode at power-on. This app can switch them from "firmware update" mode to USBTMC mode.
 
+### Frequency Response Analysis
+[Frequency Response Analysis](fra) allows you to communicate with an oscilloscope and plot Bode and Nyquist diagrams directly in the browser.  
+This tool is particularly useful for analyzing the frequency response of systems without requiring additional software or setup.
+
 ## Setup
 ### Windows
 You need to install the WinUSB driver for your instrument using Zadig.  
