@@ -10,7 +10,7 @@ function lpf1stOrder(values, cutOffFreq, ts) {
 
     filtered.push(values[0]);
     for (let i = 1; i < values.length; i++) {
-        filtered[i] = k * values[i] + (1 - k) * filtered[i - 1]
+        filtered[i] = k * values[i - 1] + (1 - k) * filtered[i - 1]
     }
 
     // Remove initial data points corresponding to 5 times the filter time constant.
