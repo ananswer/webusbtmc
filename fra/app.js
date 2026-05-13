@@ -913,73 +913,66 @@ function fetchData() {
     worker.fetch().then((result) => {
         if (!result.isSupported) {
             alert('Not supported device.');
+            isFetchDataInterval = false;
             fetchButton.innerHTML = defaultFetchButtonHTML;
             autoFetchCheckbox.checked = false;
             autoFetchCheckbox.disabled = false;
             return;
         }
 
-        if (isNaN(result.rate)) {
-            return;
+        if (isNaN(result.data_ch1[0]) || isNaN(result.data_ch2[0]) || isNaN(result.rate)) {
+            console.log('Failed to capture waveforms.');
         }
+        else {
+            // Apply low-pass filter to both waveforms
+            const samplingPeriod = (1 / result.rate);
+            const cutoffFreq = (result.rate / 1000);
 
-        // Apply low-pass filter to both waveforms
-        const samplingPeriod = (1 / result.rate);
-        const cutoffFreq = (result.rate / 1000);
+            const ch1_result = lpf1stOrder(result.data_ch1, cutoffFreq, samplingPeriod);
+            const ch2_result = lpf1stOrder(result.data_ch2, cutoffFreq, samplingPeriod);
 
-        let ch1_result = lpf1stOrder(result.data_ch1, cutoffFreq, samplingPeriod);
-        if (ch1_result.filtered.length === 0) {
-            return;
-        }
+            // Waveform Chart Data Update
+            waveformChart.data.labels = Array.from({ length: ch1_result.filtered.length }, (_, i) => (i * samplingPeriod));
+            waveformChart.data.datasets[0].data = ch1_result.raw
+            waveformChart.data.datasets[1].data = ch1_result.filtered;
+            waveformChart.data.datasets[2].data = ch2_result.raw;
+            waveformChart.data.datasets[3].data = ch2_result.filtered;
+            waveformChart.update();
 
-        let ch2_result = lpf1stOrder(result.data_ch2, cutoffFreq, samplingPeriod);
-        if (ch2_result.filtered.length === 0) {
-            return;
-        }
+            // Lissajous Chart Data Update
+            lissajousChart.data.datasets[0].data = build_xy(ch1_result.raw, ch2_result.raw);
+            lissajousChart.data.datasets[1].data = build_xy(ch1_result.filtered, ch2_result.filtered);
+            lissajousChart.update();
 
-        if (ch1_result.filtered.length !== ch2_result.filtered.length) {
-            return;
-        }
+            const analysed = findPhaseDifference(ch1_result.filtered, ch2_result.filtered, samplingPeriod);
 
-        // Waveform Chart Data Update
-        waveformChart.data.labels = Array.from({ length: ch1_result.filtered.length }, (_, i) => (i * samplingPeriod));
-        waveformChart.data.datasets[0].data = ch1_result.raw
-        waveformChart.data.datasets[1].data = ch1_result.filtered;
-        waveformChart.data.datasets[2].data = ch2_result.raw;
-        waveformChart.data.datasets[3].data = ch2_result.filtered;
-        waveformChart.update();
-
-        // Lissajous Chart Data Update
-        lissajousChart.data.datasets[0].data = build_xy(ch1_result.raw, ch2_result.raw);
-        lissajousChart.data.datasets[1].data = build_xy(ch1_result.filtered, ch2_result.filtered);
-        lissajousChart.update();
-
-        const analysed = findPhaseDifference(ch1_result.filtered, ch2_result.filtered, samplingPeriod);
-
-        if (isNaN(analysed.gain)) {
-            return;
-        }
-
-        magnitudePlot.data.labels.push(analysed.freq);
-        magnitudePlot.data.datasets[0].data.push(20 * Math.log10(analysed.gain));
-        magnitudePlot.update();
-
-        phasePlot.data.labels.push(analysed.freq);
-        phasePlot.data.datasets[0].data.push(analysed.phase_rad * 180 / Math.PI);
-        phasePlot.update();
+            if (isNaN(analysed.gain)) {
+                console.log('Failed to analyze waveforms.');
+            }
+            else {
+                magnitudePlot.data.labels.push(analysed.freq);
+                magnitudePlot.data.datasets[0].data.push(20 * Math.log10(analysed.gain));
+                magnitudePlot.update();
         
-        if(magnitudePlot.data.labels.length > MAX_DATA_POINTS) {
-            const trimmedData = processBodeData(magnitudePlot.data.labels, magnitudePlot.data.datasets[0].data, phasePlot.data.datasets[0].data);
-            redrawBodePlot(trimmedData);
+                phasePlot.data.labels.push(analysed.freq);
+                phasePlot.data.datasets[0].data.push(analysed.phase_rad * 180 / Math.PI);
+                phasePlot.update();
+                
+                if(magnitudePlot.data.labels.length > MAX_DATA_POINTS) {
+                    const trimmedData = processBodeData(magnitudePlot.data.labels, magnitudePlot.data.datasets[0].data, phasePlot.data.datasets[0].data);
+                    redrawBodePlot(trimmedData);
+                }
+        
+                // Nyquist plot data update
+                const realPart = analysed.gain * Math.cos(analysed.phase_rad);
+                const imaginaryPart = analysed.gain * Math.sin(analysed.phase_rad);
+                nyquistChart.data.datasets[0].data.push({ x: realPart, y: imaginaryPart });
+                nyquistChart.data.labels.push(analysed.freq);
+                updateNyquistScale(nyquistChart, 1.5);
+                nyquistChart.update();
+        
+            }
         }
-
-        // Nyquist plot data update
-        const realPart = analysed.gain * Math.cos(analysed.phase_rad);
-        const imaginaryPart = analysed.gain * Math.sin(analysed.phase_rad);
-        nyquistChart.data.datasets[0].data.push({ x: realPart, y: imaginaryPart });
-        nyquistChart.data.labels.push(analysed.freq);
-        updateNyquistScale(nyquistChart, 1.5);
-        nyquistChart.update();
 
         if (!isFetchDataInterval) {
             fetchButton.innerHTML = defaultFetchButtonHTML;
@@ -993,6 +986,7 @@ function fetchData() {
     }).catch((error) => {
         console.error('Error during fetching waveform:', error);
         alert('An error occurred while fetching waveform.');
+        isFetchDataInterval = false;
         fetchButton.innerHTML = defaultFetchButtonHTML;
         autoFetchCheckbox.checked = false;
         autoFetchCheckbox.disabled = false;
