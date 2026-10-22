@@ -63,9 +63,10 @@ class Takescreenshot {
     else if (this.#device.vendorId == 0x0699) {
       // Tektronix, Inc.
       this.#isTekSpecialDeviceDetected = false;
-      if ((this.#device.productId == 0x0105) ||
-        (this.#device.productId == 0x0522)) {
-          // Tek 2 and 5 series MSO
+      if ((this.#device.productId == 0x0105) || // 2 series
+          (this.#device.productId == 0x0527) || // 4 series
+          (this.#device.productId == 0x0522)) { // 5 series
+          // Tek 2, 4, and 5 series MSO
           this.#isTekSpecialDeviceDetected = true;
           this.#command = 'No command';
           this.#isBinaryBlock = false;
