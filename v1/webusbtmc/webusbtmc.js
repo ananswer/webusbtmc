@@ -105,6 +105,7 @@ class Webusbtmc {
   async open(device) {
     let interfaceNumber = 0;
     let alternateSetting = 0;
+    let found = false;
     this.#bulkinEndpointNum = -1;
     this.#bulkoutEndpointNum = -1;
     this.#interruptinEndpointNum = -1;
@@ -117,6 +118,7 @@ class Webusbtmc {
     configurationInterfaces.forEach((element) => {
       element.alternates.forEach((elementalt) => {
         if (elementalt.interfaceClass == 0xfe && elementalt.interfaceSubclass == 0x03 && elementalt.interfaceProtocol == 0x01) {
+          found = true;
           interfaceNumber = element.interfaceNumber;
           alternateSetting = elementalt.alternateSetting;
 
@@ -139,6 +141,11 @@ class Webusbtmc {
         }
       });
     });
+
+    if (!found) {
+      await this.#device.close();
+      throw new Error('No USBTMC interface found');
+    }
 
     await this.#device.claimInterface(interfaceNumber);
     await this.#device.selectAlternateInterface(interfaceNumber, alternateSetting);
@@ -222,7 +229,10 @@ class Webusbtmc {
     const bytes = await this.readBytes(length, timeout);
     const textDecoder = new TextDecoder();
     const text = textDecoder.decode(bytes);
-    return text.replace(this.#terminatorRead, '');
+    if (this.#terminatorRead && text.endsWith(this.#terminatorRead)) {
+      return text.slice(0, -this.#terminatorRead.length);
+    }
+    return text;
   }
 
   async readBytes(length = 1024, timeout = 5000) {
@@ -276,7 +286,7 @@ class Webusbtmc {
     // 1:bTag
     message[1] = this.#bulkoutbTag;
     // 2:bTagInverse
-    message[2] = ~this.#bulkoutbTag;
+    message[2] = ~this.#bulkoutbTag & 0xFF;
     // 3:Reserved(0x00)
     message[3] = 0x00;
 
@@ -339,7 +349,7 @@ class Webusbtmc {
 
 
   async receive() {
-    if (this.bulkinEndpointNum == -1) {
+    if (this.#bulkinEndpointNum == -1) {
       throw new Error('No appropriate endpoint for receive');
     }
 
@@ -701,6 +711,10 @@ class Webusbtmc {
     }
 
     const digitLength = parseInt(textDecoder.decode(output.data));
+    if (!Number.isInteger(digitLength) || digitLength < 1) {
+      console.log('Invalid digit length in readBlockData');
+      return null;
+    }
 
     await this.request(digitLength);
     timeoutID = setTimeout(() => { this.abortBulkIn(this).catch((error) => { console.log(error); }) }, timeout);
@@ -713,6 +727,10 @@ class Webusbtmc {
     }
 
     const totalBytes = parseInt(textDecoder.decode(output.data));
+    if (!Number.isInteger(totalBytes) || totalBytes < 0) {
+      console.log('Invalid byte count in readBlockData');
+      return null;
+    }
 
     const buffer = new ArrayBuffer(totalBytes);
     const images = new Uint8Array(buffer);
@@ -725,7 +743,7 @@ class Webusbtmc {
       output = await this.receive();
       clearTimeout(timeoutID);
 
-      if (!output.data) {
+      if (!output.data || output.data.length === 0) {
         break;
       }
 
