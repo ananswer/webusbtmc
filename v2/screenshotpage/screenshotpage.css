@@ -1,0 +1,20 @@
+/* The area that shows the screenshot. Oscilloscope screens are about 8:5. */
+.screen {
+  display: grid;
+  place-items: center;
+  min-height: 200px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* One column: the Capture panel is above the screen, so the button does not move out of reach. */
+.capture-panel { order: -1; }
+@container (min-width: 760px) { .capture-panel { order: 0; } }
+
+.screen img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}

@@ -1,0 +1,19 @@
+/* Chart sizes of the frequency response sample */
+#waveformChart,
+#magnitudePlot,
+#phasePlot,
+#nyquistPlot {
+  height: 300px;
+}
+
+.canvas-container {
+  width: 100%;
+  max-height: 500px;
+  position: relative;
+}
+
+/* The numbers of the last measurement */
+.kv { display: flex; flex-wrap: wrap; gap: 8px; }
+.kv .tile { background: var(--surface-2); border-radius: 8px; padding: 6px 12px; min-width: 110px; }
+.kv .tile small { display: block; color: var(--muted); font-size: 12px; }
+.kv .tile span { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; }

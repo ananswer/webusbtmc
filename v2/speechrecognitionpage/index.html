@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>WebUSBTMC Speech Control</title>
+  <script src="../common/theme.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.css"
+    integrity="sha256-SlAge5VqSrlDZA7pkxGLVUo06WojJhz+WLmqGAenhJs=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.css"
+    integrity="sha256-YNpYiT7G8W7avaxPeaEN1zFRAQQHeC6QI2KG2w7nGZI=" crossorigin="anonymous">
+  <link rel="stylesheet" href="../common/common.css">
+</head>
+
+<body>
+  <div class="app">
+    <header class="appbar">
+      <a class="brand" href="../../">WebUSBTMC<span class="chip">v2</span></a>
+      <h1 class="visually-hidden">Speech control</h1>
+      <button class="btn btn-outline-secondary theme-toggle" type="button" data-theme-toggle><i class="bi bi-circle-half"></i></button>
+    </header>
+
+    <section class="card-lite conn" aria-live="polite">
+      <div class="info">
+        <span class="dot" id="conn-dot"></span>
+        <div style="min-width: 0">
+          <div class="name" id="conn-name">Not connected</div>
+          <div class="sub" id="conn-sub">Connect an instrument with a USB cable.</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-secondary" id="howto-button">
+        <i class="bi bi-info-circle me-1"></i>How to use
+      </button>
+      <button class="btn btn-primary" type="button" id="connect-button">Connect</button>
+    </section>
+
+    <div id="alerts"></div>
+
+    <main class="grid2">
+      <section class="card-lite panel">
+        <h2>Voice</h2>
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-sm-7">
+            <button type="button" class="btn btn-primary w-100" id="recognition-button">
+              Start speech recognition
+            </button>
+          </div>
+          <div class="col-12 col-sm-5">
+            <label class="visually-hidden" for="language-selector">Language</label>
+            <select class="form-select" id="language-selector">
+              <option value="af-ZA">af-ZA</option>
+              <option value="am-ET">am-ET</option>
+              <option value="az-AZ">az-AZ</option>
+              <option value="bn-BD">bn-BD</option>
+              <option value="bn-IN">bn-IN</option>
+              <option value="id-ID">id-ID</option>
+              <option value="ms-MY">ms-MY</option>
+              <option value="ca-ES">ca-ES</option>
+              <option value="cs-CZ">cs-CZ</option>
+              <option value="da-DK">da-DK</option>
+              <option value="de-DE">de-DE</option>
+              <option value="en-AU">en-AU</option>
+              <option value="en-CA">en-CA</option>
+              <option value="en-IN">en-IN</option>
+              <option value="en-KE">en-KE</option>
+              <option value="en-TZ">en-TZ</option>
+              <option value="en-GH">en-GH</option>
+              <option value="en-NZ">en-NZ</option>
+              <option value="en-NG">en-NG</option>
+              <option value="en-ZA">en-ZA</option>
+              <option value="en-PH">en-PH</option>
+              <option value="en-GB">en-GB</option>
+              <option value="en-US">en-US</option>
+              <option value="es-AR">es-AR</option>
+              <option value="es-BO">es-BO</option>
+              <option value="es-CL">es-CL</option>
+              <option value="es-CO">es-CO</option>
+              <option value="es-CR">es-CR</option>
+              <option value="es-EC">es-EC</option>
+              <option value="es-SV">es-SV</option>
+              <option value="es-ES">es-ES</option>
+              <option value="es-US">es-US</option>
+              <option value="es-GT">es-GT</option>
+              <option value="es-HN">es-HN</option>
+              <option value="es-MX">es-MX</option>
+              <option value="es-NI">es-NI</option>
+              <option value="es-PA">es-PA</option>
+              <option value="es-PY">es-PY</option>
+              <option value="es-PE">es-PE</option>
+              <option value="es-PR">es-PR</option>
+              <option value="es-DO">es-DO</option>
+              <option value="es-UY">es-UY</option>
+              <option value="es-VE">es-VE</option>
+              <option value="eu-ES">eu-ES</option>
+              <option value="fil-PH">fil-PH</option>
+              <option value="fr-FR">fr-FR</option>
+              <option value="jv-ID">jv-ID</option>
+              <option value="gl-ES">gl-ES</option>
+              <option value="gu-IN">gu-IN</option>
+              <option value="hr-HR">hr-HR</option>
+              <option value="zu-ZA">zu-ZA</option>
+              <option value="is-IS">is-IS</option>
+              <option value="it-IT">it-IT</option>
+              <option value="it-CH">it-CH</option>
+              <option value="kn-IN">kn-IN</option>
+              <option value="km-KH">km-KH</option>
+              <option value="lv-LV">lv-LV</option>
+              <option value="lt-LT">lt-LT</option>
+              <option value="ml-IN">ml-IN</option>
+              <option value="mr-IN">mr-IN</option>
+              <option value="hu-HU">hu-HU</option>
+              <option value="lo-LA">lo-LA</option>
+              <option value="nl-NL">nl-NL</option>
+              <option value="ne-NP">ne-NP</option>
+              <option value="nb-NO">nb-NO</option>
+              <option value="pl-PL">pl-PL</option>
+              <option value="pt-BR">pt-BR</option>
+              <option value="pt-PT">pt-PT</option>
+              <option value="ro-RO">ro-RO</option>
+              <option value="si-LK">si-LK</option>
+              <option value="sl-SI">sl-SI</option>
+              <option value="su-ID">su-ID</option>
+              <option value="sk-SK">sk-SK</option>
+              <option value="fi-FI">fi-FI</option>
+              <option value="sv-SE">sv-SE</option>
+              <option value="sw-TZ">sw-TZ</option>
+              <option value="sw-KE">sw-KE</option>
+              <option value="ka-GE">ka-GE</option>
+              <option value="hy-AM">hy-AM</option>
+              <option value="ta-IN">ta-IN</option>
+              <option value="ta-SG">ta-SG</option>
+              <option value="ta-LK">ta-LK</option>
+              <option value="ta-MY">ta-MY</option>
+              <option value="te-IN">te-IN</option>
+              <option value="vi-VN">vi-VN</option>
+              <option value="tr-TR">tr-TR</option>
+              <option value="ur-PK">ur-PK</option>
+              <option value="ur-IN">ur-IN</option>
+              <option value="el-GR">el-GR</option>
+              <option value="bg-BG">bg-BG</option>
+              <option value="ru-RU">ru-RU</option>
+              <option value="sr-RS">sr-RS</option>
+              <option value="uk-UA">uk-UA</option>
+              <option value="ko-KR">ko-KR</option>
+              <option value="cmn-Hans-CN">cmn-Hans-CN</option>
+              <option value="cmn-Hans-HK">cmn-Hans-HK</option>
+              <option value="cmn-Hant-TW">cmn-Hant-TW</option>
+              <option value="yue-Hant-HK">yue-Hant-HK</option>
+              <option value="ja-JP">ja-JP</option>
+              <option value="hi-IN">hi-IN</option>
+              <option value="th-TH">th-TH</option>
+            </select>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2 mb-3" aria-live="polite">
+          <span class="dot" id="listen-dot"></span><span id="listen-text">Not listening</span>
+        </div>
+        <label for="whatyousaid" class="field-label">You spoke</label>
+        <input type="text" class="form-control" id="whatyousaid" readonly>
+        <div class="form-check form-switch mt-3">
+          <input class="form-check-input" type="checkbox" role="switch" id="test-mode">
+          <label class="form-check-label" for="test-mode">Test mode: show the commands, but do not send them</label>
+        </div>
+        <div class="form-check form-switch mt-2">
+          <input class="form-check-input" type="checkbox" role="switch" id="early-mode">
+          <label class="form-check-label" for="early-mode">React before the phrase ends (faster, but it may react to a half-heard phrase)</label>
+        </div>
+        <p class="note mt-3 mb-0">Your voice is processed by the speech service of the browser (Chrome: Google,
+          Edge: Microsoft), not by this page.</p>
+      </section>
+
+      <section class="card-lite panel">
+        <h2>Keywords and commands</h2>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Keyword" aria-label="Keyword 1" id="input-keyword">
+          <input type="text" class="form-control mono" placeholder="Command" aria-label="Command 1" id="input-command" spellcheck="false">
+        </div>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" placeholder="Keyword 2" aria-label="Keyword 2" id="input-keyword2">
+          <input type="text" class="form-control mono" placeholder="Command 2" aria-label="Command 2" id="input-command2" spellcheck="false">
+        </div>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Keyword 3" aria-label="Keyword 3" id="input-keyword3">
+          <input type="text" class="form-control mono" placeholder="Command 3" aria-label="Command 3" id="input-command3" spellcheck="false">
+        </div>
+        <p class="note mt-3 mb-0">The commands are sent as they are. Answers are not read, so use commands that do not
+          produce an answer.</p>
+      </section>
+
+      <section class="card-lite panel" style="grid-column: 1 / -1">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h2 class="mb-0">Log</h2>
+          <button class="btn btn-sm btn-outline-secondary" type="button" id="clear-log-button" style="min-height: 32px">Clear log</button>
+        </div>
+        <div class="log" id="speech-log" role="log" aria-live="polite" style="height: 160px"><div class="empty">Nothing yet. Press Start speech recognition and say a keyword.</div></div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span>Windows needs the WinUSB driver: <a href="https://github.com/ananswer/webusbtmc/#windows">setup guide</a></span>
+    </footer>
+  </div>
+
+  <template id="howto-body" data-title="How to use Speech control">
+    <p>Send commands to an instrument by voice.</p>
+    <ol>
+      <li><strong>Connect.</strong> Press <b>Connect</b> and choose your instrument in the dialog of the browser.</li>
+      <li><strong>Register.</strong> Enter a keyword and the command to send when the keyword is heard. Up to three pairs. They are remembered in this browser.</li>
+      <li><strong>Listen.</strong> Check the language (it starts with the language of your browser) and press <b>Start speech recognition</b>. Allow the microphone when the browser asks.</li>
+      <li><strong>Speak.</strong> Say a keyword. Its command is sent to the instrument, and the log shows what was heard and what was sent.</li>
+    </ol>
+    <h6>Try it safely</h6>
+    <p>Turn on <b>Test mode</b> to see which commands would be sent without sending them. Check that <b>Listening</b> is shown: that is when the microphone is open.</p>
+    <h6>Notes</h6>
+    <ul>
+      <li>Speech recognition needs a browser that supports it, such as Chrome or Edge. The audio is sent to the speech service of the browser (Chrome: Google, Edge: Microsoft). Do not use it for confidential work.</li>
+      <li>By default only a finished phrase counts. <b>React before the phrase ends</b> is faster, but may react to a half-heard phrase.</li>
+      <li>In languages written with spaces a keyword must be heard as a whole word: “on” is not found in “one”.</li>
+      <li>If several keywords are heard in one phrase, the one heard last is used.</li>
+      <li>The commands are only written. Answers of the instrument are not read, so use commands that do not produce an answer.</li>
+      <li>Be careful with commands that switch an output on. Background talk can be mistaken for a keyword.</li>
+    </ul>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+    integrity="sha256-ew8UiV1pJH/YjpOEBInP1HxVvT/SfrCmwSoUzF9JIgc=" crossorigin="anonymous"></script>
+  <script type="module" src="speechrecognitionpage.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>WebUSBTMC Unlock Modular</title>
+  <script src="../common/theme.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.css"
+    integrity="sha256-SlAge5VqSrlDZA7pkxGLVUo06WojJhz+WLmqGAenhJs=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.css"
+    integrity="sha256-YNpYiT7G8W7avaxPeaEN1zFRAQQHeC6QI2KG2w7nGZI=" crossorigin="anonymous">
+  <link rel="stylesheet" href="../common/common.css">
+</head>
+
+<body>
+  <div class="app">
+    <header class="appbar">
+      <a class="brand" href="../../">WebUSBTMC<span class="chip">v2</span></a>
+      <h1 class="visually-hidden">Unlock USB modular instruments</h1>
+      <button class="btn btn-outline-secondary theme-toggle" type="button" data-theme-toggle><i class="bi bi-circle-half"></i></button>
+    </header>
+
+    <div id="alerts"></div>
+
+    <main>
+      <section class="card-lite panel">
+        <h2>Switch a modular instrument to USBTMC mode</h2>
+        <p>Keysight (or Agilent) U27xx modular instruments stay in “firmware update” mode when they are powered on.
+          This tool switches them to USBTMC mode, so that the other samples can use them.
+          Do this each time the instrument is powered on.</p>
+        <ol class="mb-3">
+          <li>Connect the instrument with a USB cable.</li>
+          <li>Press <b>Switch to USBTMC mode</b> and choose the instrument in the dialog of the browser.
+            Only Keysight (Agilent) instruments are listed.</li>
+          <li>The instrument restarts and appears as a new USB device. Wait a few seconds, then use it from the other samples.</li>
+        </ol>
+        <button class="btn btn-primary" type="button" id="unlock"><i class="bi bi-arrow-repeat me-1"></i>Switch to USBTMC mode</button>
+        <p class="note mt-3 mb-0">On Windows the instrument may need the WinUSB driver in both modes: after the restart it
+          is a different USB device (see the setup guide below).</p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span>Windows needs the WinUSB driver: <a href="https://github.com/ananswer/webusbtmc/#windows">setup guide</a></span>
+    </footer>
+  </div>
+
+  <script type="module" src="unlockusbmodular.js"></script>
+</body>
+
+</html>

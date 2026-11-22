@@ -1,21 +1,87 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>WebUSBTMC Demos</title>
-  </head>
-  <body>
-    <h1>WebUSBTMC Demos</h1>
-    <ul>
-      <li><a href="v1/basiciopage/">Basic IO page</a></li>
-      <li><a href="v1/blocklypage/">Blockly page</a></li>
-      <li><a href="v1/screenshotpage/">Take a screenshot on your device</a></li>
-      <li><a href="v1/speechrecognitionpage/">Speech Recognition</a></li>
-      <li><a href="v1/unlockusbmodular/">USB modular instruments unlocker</a></li>
-      <li><a href="v1/fra/">Frequency Response Analysis with your oscilloscope</a></li>
-    </ul>
-    <a href="https://github.com/ananswer/webusbtmc">Fork me on GitHub</a>
-  </body>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>WebUSBTMC Demos</title>
+  <script src="v2/common/theme.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.css"
+    integrity="sha256-SlAge5VqSrlDZA7pkxGLVUo06WojJhz+WLmqGAenhJs=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.css"
+    integrity="sha256-YNpYiT7G8W7avaxPeaEN1zFRAQQHeC6QI2KG2w7nGZI=" crossorigin="anonymous">
+  <link rel="stylesheet" href="v2/common/common.css">
+  <style>
+    /* The list of samples. Each sample stands on its own, so this page is the only place that knows them all. */
+    .samples { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; grid-template-columns: 1fr; }
+    @container (min-width: 760px) { .samples { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+    .sample {
+      display: block; height: 100%; padding: 16px; color: var(--fg); text-decoration: none;
+    }
+    .sample:hover { border-color: var(--accent); color: var(--fg); }
+    .sample:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .sample h2 { font-size: 16px; font-weight: 650; text-transform: none; letter-spacing: 0; color: var(--fg); margin: 0 0 4px; }
+    .sample p { margin: 0; color: var(--muted); font-size: 14px; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="appbar">
+      <span class="brand">WebUSBTMC<span class="chip">v2</span></span>
+      <button class="btn btn-outline-secondary theme-toggle" type="button" data-theme-toggle><i class="bi bi-circle-half"></i></button>
+    </header>
+
+    <p class="mt-2 mb-4">Control test and measurement instruments from your browser. Choose a sample.</p>
+
+    <main>
+      <ul class="samples">
+        <li>
+          <a class="card-lite sample" href="v2/basiciopage/">
+            <h2><i class="bi bi-terminal me-2"></i>Basic I/O</h2>
+            <p>Send commands to an instrument and read the answers. A quick way to check the connection.</p>
+          </a>
+        </li>
+        <li>
+          <a class="card-lite sample" href="v2/screenshotpage/">
+            <h2><i class="bi bi-camera me-2"></i>Screenshot</h2>
+            <p>Capture the screen of an oscilloscope and save it as an image.</p>
+          </a>
+        </li>
+        <li>
+          <a class="card-lite sample" href="v2/fra/">
+            <h2><i class="bi bi-activity me-2"></i>Frequency response</h2>
+            <p>Measure the frequency response of a circuit with an oscilloscope. Bode and Nyquist plots.</p>
+          </a>
+        </li>
+        <li>
+          <a class="card-lite sample" href="v2/dmmlogger/">
+            <h2><i class="bi bi-graph-up me-2"></i>DMM logger</h2>
+            <p>Record the readings of one or two DMMs over time. Save them as CSV and look at them again.</p>
+          </a>
+        </li>
+        <li>
+          <a class="card-lite sample" href="v2/speechrecognitionpage/">
+            <h2><i class="bi bi-mic me-2"></i>Speech control</h2>
+            <p>Send commands to an instrument by voice.</p>
+          </a>
+        </li>
+        <li>
+          <a class="card-lite sample" href="v2/unlockusbmodular/">
+            <h2><i class="bi bi-unlock me-2"></i>Unlock modular instruments</h2>
+            <p>Switch Keysight (Agilent) USB modular instruments from firmware update mode to USBTMC mode.</p>
+          </a>
+        </li>
+      </ul>
+    </main>
+
+    <footer class="foot">
+      <span>Windows needs the WinUSB driver: <a href="https://github.com/ananswer/webusbtmc/#windows">setup guide</a></span>
+      <a href="v1/">Previous version (v1)</a>
+      <a href="https://github.com/ananswer/webusbtmc">GitHub</a>
+    </footer>
+  </div>
+</body>
+
 </html>

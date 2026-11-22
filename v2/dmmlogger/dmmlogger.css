@@ -1,0 +1,58 @@
+/* The DMM logger: the controls, one card for each DMM, the chart */
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 12px 14px; margin-block: 6px 12px; }
+.controls .interval { display: flex; align-items: center; gap: 8px; }
+.controls .interval label { margin: 0; }
+.controls .interval .form-select { width: auto; }
+.controls .status { flex: 1 1 200px; min-width: 0; font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.controls .status b { color: var(--fg); }
+
+.dmm-grid { display: grid; gap: 12px; grid-template-columns: 1fr; margin-bottom: 12px; }
+@container (min-width: 760px) { .dmm-grid { grid-template-columns: 1fr 1fr; } }
+
+/* The colour of the card is the colour of its line in the chart */
+.dmm { --slot-color: var(--ch1); border-left: 4px solid var(--slot-color); padding: 12px 14px 14px; min-width: 0; }
+.dmm.second { --slot-color: var(--ch2); }
+.dmm .head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.dmm .head .info { display: flex; align-items: center; gap: 10px; flex: 1 1 auto; min-width: 0; }
+.dmm .head .name { font-weight: 650; line-height: 1.25; overflow-wrap: anywhere; }
+.dmm .head .sub { font-size: 13px; color: var(--muted); }
+.dmm .fields { display: grid; gap: 8px 10px; grid-template-columns: 1fr 1fr; margin-bottom: 10px; }
+@container (max-width: 520px) { .dmm .fields { grid-template-columns: 1fr; } }
+.dmm .reading {
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 650;
+  font-size: clamp(26px, 7cqi, 40px); line-height: 1.15; color: var(--slot-color); margin-block: 4px 8px; overflow-wrap: anywhere;
+}
+.dmm .reading.dim { color: var(--muted); }
+.dmm .kv .tile { min-width: 90px; flex: 1 1 90px; }
+@container (max-width: 520px) { .dmm .kv .tile { padding: 6px 8px; min-width: 0; } .dmm .kv .tile span { font-size: 13px; white-space: nowrap; } }
+
+/* The settings that are normally hidden */
+.settings { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 10px; }
+.settings summary { cursor: pointer; margin-bottom: 8px; }
+.apply-row { align-items: center; }
+.apply-result { list-style: none; margin: 8px 0 0; padding: 0; font-size: 13px; }
+.apply-result li { display: flex; gap: 6px; overflow-wrap: anywhere; }
+.apply-result li + li { margin-top: 2px; }
+.apply-result .ok .bi { color: var(--ok); }
+.apply-result .err { color: var(--err); }
+.apply-result .err .bi { color: var(--err); }
+
+/* Which part of the recording the chart shows */
+.view-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-bottom: 8px; }
+.view-controls .field-label { margin: 0; }
+.view-controls .form-select { width: auto; }
+.scroll-range { flex: 1 1 160px; min-width: 0; accent-color: var(--accent); }
+@container (max-width: 520px) { .scroll-range { order: 3; flex-basis: 100%; } }
+
+.chart-box { position: relative; height: 340px; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.panel-head h2 { margin: 0; }
+.file-label { cursor: pointer; }
+.file-label.disabled { pointer-events: none; opacity: .65; }
+.skip-note { margin: 8px 0 0; }
+
+.kv { display: flex; flex-wrap: wrap; gap: 8px; }
+.kv .tile { background: var(--surface-2); border-radius: 8px; padding: 6px 12px; }
+.kv .tile small { display: block; color: var(--muted); font-size: 12px; }
+.kv .tile span { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 600; overflow-wrap: anywhere; }

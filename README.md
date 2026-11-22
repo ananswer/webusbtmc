@@ -6,7 +6,8 @@ USBTMC is a device class specification for remotely controlling test and measure
 It is also used in VISA (Virtual Instrument Software Architecture) to communicate with instruments over USB.
 
 ## Code example and practical examples
-See [v1/README.md](v1/README.md).
+See [v2/README.md](v2/README.md).  
+The previous version is kept in [v1](v1/README.md).
 
 ## Setup
 ### Windows

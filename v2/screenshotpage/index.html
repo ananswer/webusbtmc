@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>WebUSBTMC Screenshot</title>
+  <script src="../common/theme.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.css"
+    integrity="sha256-SlAge5VqSrlDZA7pkxGLVUo06WojJhz+WLmqGAenhJs=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.css"
+    integrity="sha256-YNpYiT7G8W7avaxPeaEN1zFRAQQHeC6QI2KG2w7nGZI=" crossorigin="anonymous">
+  <link rel="stylesheet" href="../common/common.css">
+  <link rel="stylesheet" href="screenshotpage.css">
+</head>
+
+<body>
+  <div class="app">
+    <header class="appbar">
+      <a class="brand" href="../../">WebUSBTMC<span class="chip">v2</span></a>
+      <h1 class="visually-hidden">Take a screenshot from an oscilloscope</h1>
+      <button class="btn btn-outline-secondary theme-toggle" type="button" data-theme-toggle><i class="bi bi-circle-half"></i></button>
+    </header>
+
+    <section class="card-lite conn" aria-live="polite">
+      <div class="info">
+        <span class="dot" id="conn-dot"></span>
+        <div style="min-width: 0">
+          <div class="name" id="conn-name">Not connected</div>
+          <div class="sub" id="conn-sub">Connect an instrument with a USB cable.</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-secondary" id="howto-button">
+        <i class="bi bi-info-circle me-1"></i>How to use
+      </button>
+      <button class="btn btn-primary" type="button" id="connect-button">Connect</button>
+    </section>
+
+    <div id="alerts"></div>
+
+    <main class="grid2">
+      <section class="card-lite panel">
+        <h2>Screen</h2>
+        <div class="screen" id="screen">
+          <p class="note m-0 p-3 text-center" id="screen-empty">No screenshot yet.<br>Press “Take a screenshot”.</p>
+          <img class="d-none" id="screenshot-image" alt="Screenshot of the instrument">
+        </div>
+      </section>
+
+      <section class="card-lite panel capture-panel">
+        <h2>Capture</h2>
+        <div class="row-actions mb-3">
+          <button type="button" class="btn btn-primary" id="takeashot-button" data-needs-connection disabled>
+            <i class="bi bi-camera me-1"></i>Take a screenshot
+          </button>
+          <button type="button" class="btn btn-outline-secondary" id="copy-image-button" disabled>
+            <i class="bi bi-clipboard me-1"></i>Copy image
+          </button>
+          <a class="btn btn-outline-secondary disabled" id="download-link" href="#" role="button" aria-disabled="true">
+            <i class="bi bi-download me-1"></i>Save image
+          </a>
+        </div>
+        <p class="note">The command is chosen from the vendor of the instrument. If no image appears, open the advanced
+          settings.</p>
+
+        <details id="advanced">
+          <summary class="field-label">Advanced settings</summary>
+          <div class="pt-2">
+            <label class="field-label" for="command-input">Screenshot command</label>
+            <input class="form-control mono mb-1" id="command-input" placeholder="Enter command" spellcheck="false">
+            <p class="note">Customize the screenshot command for your instrument.</p>
+
+            <label class="field-label" for="delay-input">Wait time (milliseconds)</label>
+            <input class="form-control mono mb-1" id="delay-input" placeholder="milliseconds" inputmode="numeric">
+            <p class="note">Wait time after the command is sent, before the image is read.</p>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="binaryBlock-check">
+              <label class="form-check-label" for="binaryBlock-check">The image comes as a binary block (<span class="mono">#…</span>)</label>
+            </div>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm mb-2" id="fetchDeviceInfo-button" data-needs-connection disabled>Fetch device info</button>
+            <label class="field-label" for="yourDevice-textarea">About your device</label>
+            <textarea class="form-control mono mb-1" id="yourDevice-textarea" rows="3" readonly></textarea>
+            <p class="note mb-0">Please include this when you report a problem.</p>
+          </div>
+        </details>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span>Windows needs the WinUSB driver: <a href="https://github.com/ananswer/webusbtmc/#windows">setup guide</a></span>
+    </footer>
+  </div>
+
+  <template id="howto-body" data-title="How to use Screenshot">
+    <p>Capture the screen of an oscilloscope and save it as an image.</p>
+    <ol>
+      <li><strong>Connect.</strong> Press <b>Connect</b> and choose your oscilloscope in the dialog of the browser.</li>
+      <li><strong>Capture.</strong> Press <b>Take a screenshot</b>. The image appears on the left.</li>
+      <li><strong>Save.</strong> Press <b>Save image</b> to download it, or <b>Copy image</b> to paste it into a document or a chat.</li>
+    </ol>
+    <h6>Supported instruments</h6>
+    <p>Keysight (Agilent), Tektronix, Rigol, Yokogawa, Rohde &amp; Schwarz and LeCroy oscilloscopes. The command is chosen from the vendor of the instrument.</p>
+    <h6>What the page sends to the instrument</h6>
+    <ul>
+      <li>Keysight (Agilent), Rigol, Yokogawa and Rohde &amp; Schwarz: only a query for the screen data.</li>
+      <li>Tektronix 2, 4 and 5 series: saves a temporary image file (<code>C:/tmp000.png</code>) on the instrument and reads it.</li>
+      <li>Other Tektronix: <code>HARDCopy START</code>, after a device clear when connecting.</li>
+      <li>LeCroy: sets the hardcopy setup (PNG, oscilloscope window) when connecting.</li>
+    </ul>
+    <h6>If no image appears</h6>
+    <p>Open <b>Advanced settings</b> and check the command, the wait time and the binary block setting. <b>Fetch device info</b> shows the details to include when you report a problem.</p>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+    integrity="sha256-ew8UiV1pJH/YjpOEBInP1HxVvT/SfrCmwSoUzF9JIgc=" crossorigin="anonymous"></script>
+
+  <script type="module" src="screenshotpage.js"></script>
+</body>
+
+</html>

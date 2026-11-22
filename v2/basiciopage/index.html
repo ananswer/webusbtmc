@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>WebUSBTMC Basic I/O</title>
+  <script src="../common/theme.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.css"
+    integrity="sha256-SlAge5VqSrlDZA7pkxGLVUo06WojJhz+WLmqGAenhJs=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.2/font/bootstrap-icons.css"
+    integrity="sha256-YNpYiT7G8W7avaxPeaEN1zFRAQQHeC6QI2KG2w7nGZI=" crossorigin="anonymous">
+  <link rel="stylesheet" href="../common/common.css">
+</head>
+
+<body>
+  <div class="app">
+    <header class="appbar">
+      <a class="brand" href="../../">WebUSBTMC<span class="chip">v2</span></a>
+      <h1 class="visually-hidden">Basic I/O</h1>
+      <button class="btn btn-outline-secondary theme-toggle" type="button" data-theme-toggle><i class="bi bi-circle-half"></i></button>
+    </header>
+
+    <section class="card-lite conn" aria-live="polite">
+      <div class="info">
+        <span class="dot" id="conn-dot"></span>
+        <div style="min-width: 0">
+          <div class="name" id="conn-name">Not connected</div>
+          <div class="sub" id="conn-sub">Connect an instrument with a USB cable.</div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline-secondary" id="howto-button">
+        <i class="bi bi-info-circle me-1"></i>How to use
+      </button>
+      <button class="btn btn-primary" type="button" id="connect-button">Connect</button>
+    </section>
+
+    <div id="alerts"></div>
+
+    <main class="grid2">
+      <section class="card-lite panel">
+        <h2>Command</h2>
+        <label class="field-label" for="input-text">SCPI command</label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control mono" placeholder="Select or enter a command" id="input-text"
+            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">Examples</button>
+          <ul class="dropdown-menu dropdown-menu-end" id="command-group">
+            <li><button class="dropdown-item mono" type="button">*IDN?</button></li>
+            <li><button class="dropdown-item mono" type="button">*CLS</button></li>
+            <li><button class="dropdown-item mono" type="button">*RST</button></li>
+            <li><button class="dropdown-item mono" type="button">*TST?</button></li>
+            <li><button class="dropdown-item mono" type="button">*OPC</button></li>
+            <li><button class="dropdown-item mono" type="button">*OPC?</button></li>
+            <li><button class="dropdown-item mono" type="button">*WAI</button></li>
+            <li><button class="dropdown-item mono" type="button">*ESE</button></li>
+            <li><button class="dropdown-item mono" type="button">*ESE?</button></li>
+            <li><button class="dropdown-item mono" type="button">*ESR?</button></li>
+            <li><button class="dropdown-item mono" type="button">*SRE</button></li>
+            <li><button class="dropdown-item mono" type="button">*SRE?</button></li>
+            <li><button class="dropdown-item mono" type="button">*STB?</button></li>
+            <li><button class="dropdown-item mono" type="button">:DISPlay:DATA?</button></li>
+            <li><button class="dropdown-item mono" type="button">:HCOPy:DATA?</button></li>
+            <li><button class="dropdown-item mono" type="button">HARDCopy START</button></li>
+          </ul>
+        </div>
+
+        <div class="row-actions mb-3">
+          <button type="button" class="btn btn-primary" id="wr-button" data-needs-connection disabled>Write</button>
+          <button type="button" class="btn btn-primary" id="rd-button" data-needs-connection disabled>Read</button>
+          <button type="button" class="btn btn-outline-secondary" id="rstatus-button" data-needs-connection disabled>Status byte</button>
+          <button type="button" class="btn btn-outline-secondary" id="clear-button" data-needs-connection disabled>Device clear</button>
+        </div>
+        <p class="note">Write sends the command. Read fetches the answer. Only a query (the command name is
+          followed by <span class="mono">?</span>) produces an answer. Press ↑ in the command field to recall earlier commands.</p>
+
+        <details>
+          <summary class="field-label">Transfer options</summary>
+          <div class="row g-3 pt-2">
+            <div class="col-12 col-sm-6">
+              <label class="field-label" for="wr-type">Write as</label>
+              <select class="form-select" id="wr-type">
+                <option value="data" selected>Text</option>
+                <option value="binary">Binary data (block)</option>
+              </select>
+              <div class="form-text">Binary: the selected file is sent after the command as a block (<span class="mono">#…</span>).</div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <label class="field-label" for="wr-filebutton">File to send</label>
+              <input type="file" class="form-control" id="wr-filebutton">
+            </div>
+            <div class="col-12 col-sm-6">
+              <label class="field-label" for="rd-type">Read as</label>
+              <select class="form-select" id="rd-type">
+                <option value="data" selected>Text / raw bytes</option>
+                <option value="binary">Binary block (starts with #)</option>
+              </select>
+              <div class="form-text">Use the binary block for answers that start with <span class="mono">#</span>, such as screen images.</div>
+            </div>
+            <div class="col-12 col-sm-6">
+              <label class="field-label" for="rd-length">Bytes to read</label>
+              <input type="text" inputmode="numeric" class="form-control mono" id="rd-length" placeholder="65535">
+            </div>
+            <div class="col-12 col-sm-6">
+              <label class="field-label" for="rd-timeout">Timeout</label>
+              <select class="form-select" id="rd-timeout">
+                <option value="1000">1 second</option>
+                <option value="5000" selected>5 seconds</option>
+                <option value="10000">10 seconds</option>
+                <option value="30000">30 seconds</option>
+                <option value="60000">60 seconds</option>
+              </select>
+              <div class="form-text">How long Read waits for the instrument.</div>
+            </div>
+            <div class="col-12">
+              <label class="field-label" for="rd-as">Show the result as</label>
+              <select class="form-select" id="rd-as">
+                <option value="text" selected>Text</option>
+                <option value="image">Image</option>
+                <option value="object">File (download)</option>
+              </select>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="card-lite panel">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <h2 class="mb-0">Output</h2>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary" type="button" id="copy-log-button" style="min-height: 32px">Copy</button>
+            <button class="btn btn-sm btn-outline-secondary" type="button" id="clear-text-button" style="min-height: 32px">Clear log</button>
+          </div>
+        </div>
+        <ul class="nav nav-tabs mb-3" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="text-tab" data-bs-toggle="tab" data-bs-target="#text-pane" type="button"
+              role="tab" aria-controls="text-pane" aria-selected="true">Text</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="image-tab" data-bs-toggle="tab" data-bs-target="#image-pane" type="button"
+              role="tab" aria-controls="image-pane" aria-selected="false">Image</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="object-tab" data-bs-toggle="tab" data-bs-target="#object-pane" type="button"
+              role="tab" aria-controls="object-pane" aria-selected="false">File</button>
+          </li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="text-pane" role="tabpanel" aria-labelledby="text-tab" tabindex="0">
+            <div class="log" id="output-log" role="log" aria-live="polite"><div class="empty">Nothing yet. Connect, then write a command.</div></div>
+          </div>
+          <div class="tab-pane fade" id="image-pane" role="tabpanel" aria-labelledby="image-tab" tabindex="0">
+            <p class="note" id="image-empty">No image received yet. Choose “Image” under Transfer options, then Read.</p>
+            <div class="d-none" id="image-area">
+              <a href="#" id="image-link"><img class="img-fluid" id="image-field" alt="Received image"></a>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="object-pane" role="tabpanel" aria-labelledby="object-tab" tabindex="0">
+            <p class="note" id="object-empty">No file received yet. Choose “File (download)” under Transfer options, then Read.</p>
+            <div class="d-none" id="object-area">
+              <output id="rcvd-length"></output>
+              <a href="#" id="file-link" class="ms-2">Download</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span>Windows needs the WinUSB driver: <a href="https://github.com/ananswer/webusbtmc/#windows">setup guide</a></span>
+    </footer>
+  </div>
+
+  <template id="howto-body" data-title="How to use Basic I/O">
+    <p>Send commands to an instrument and read its answers.</p>
+    <ol>
+      <li><strong>Connect.</strong> Press <b>Connect</b> and choose your instrument in the dialog of the browser.</li>
+      <li><strong>Write.</strong> Type a command, or pick one under <b>Examples</b>, and press <b>Write</b>.</li>
+      <li><strong>Read.</strong> Press <b>Read</b> to fetch the answer. Only a query (the command name is followed by <code>?</code>, for example <code>*IDN?</code>) produces an answer.</li>
+    </ol>
+    <h6>Other buttons</h6>
+    <ul>
+      <li><b>Status byte</b> reads the status byte of the instrument and names the bits that are set (see below).</li>
+      <li><b>Device clear</b> resets the communication with the instrument. Use it when the answers stop coming.</li>
+    </ul>
+    <h6>Status byte</h6>
+    <ul>
+      <li><b>MAV</b> (bit 4): the instrument has an answer to read.</li>
+      <li><b>ESB</b> (bit 5): an event is recorded in the standard event status register, for example an error. Read it with <code>*ESR?</code>.</li>
+      <li><b>MSS</b> (bit 6): the instrument requests service.</li>
+      <li><b>EAV</b> (bit 2): the error queue has entries. Read them with <code>:SYSTem:ERRor?</code>.</li>
+      <li><b>QSB</b> (bit 3) and <b>OSB</b> (bit 7): summary of the questionable and the operation status.</li>
+      <li>Other bits depend on the instrument and are shown as “bit 0” and so on.</li>
+    </ul>
+    <h6>Transfer options</h6>
+    <p>Open <b>Transfer options</b> to read binary data, to show the result as an image or as a file, to send a file, or to change the timeout of Read.</p>
+    <h6>Tips</h6>
+    <ul>
+      <li>If Read reports that there was no answer, write a query first, or raise the timeout if the instrument is slow. The connection can still be used.</li>
+      <li>The log can be copied with <b>Copy</b>. Each line has the time it was written.</li>
+    </ul>
+  </template>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+    integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"
+    integrity="sha256-ew8UiV1pJH/YjpOEBInP1HxVvT/SfrCmwSoUzF9JIgc=" crossorigin="anonymous"></script>
+
+  <script type="module" src="basiciopage.js"></script>
+</body>
+
+</html>
